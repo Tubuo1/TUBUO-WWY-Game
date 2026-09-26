@@ -16,6 +16,7 @@ const SOURCES={
 const COUNTS=[20,30,40,50,60];
 const PASS=[14,21,28,35,42];
 const SKILLS=["Awareness","Empathy","Safety","Rights","Evidence","Judgement","Courage"];
+const SKILLS_BY_STAGE=[["Awareness","Rights","Judgement"],["Safety","Rights","Judgement","Courage"],["Empathy","Safety","Courage","Rights"],["Evidence","Judgement","Rights","Safety"],SKILLS];
 
 const PATHS={
  "adult-f":{id:"adult-f",age:"18+",sex:"female",level:"adult",label:"Women 18+",entryTitle:"WHAT WOULD YOU DO?",entrySub:"Relationships, safety & choice",description:"Adult situations seen through women’s everyday realities — relationships, work, family, digital life, public space and support.",stages:["See the Signs","Pressure & Control","Safety & Support","Evidence & Institutions","Complex Cases"],badges:["RED FLAG SPOTTER","SAFETY THINKER","RIGHTS DETECTIVE","EVIDENCE CHECKER","COMMUNITY ALLY"]},
@@ -159,28 +160,27 @@ const THEMES={
 
 const DISTRACTORS={
  adult:[
-  ["Wait until there is physical injury before treating the situation as serious.","Assume one dramatic action will solve everything and take over the decision.","Treat the most confident person’s explanation as the truth."],
-  ["Confront the person publicly right away, regardless of risk.","Make the decision for the person affected because helping means taking control.","Ignore the pattern unless police are already involved."],
-  ["Ask for every private detail before offering support.","Tell the whole community so the person cannot change their mind.","Withdraw support if the person does not follow your advice."],
-  ["Share the claim widely first and verify it later.","Choose the version told by the most popular person.","Expose private details so strangers can investigate."],
-  ["Put reputation ahead of safety and privacy.","Use a surprise confrontation even if the person affected fears it.","Treat uncertainty as a reason to do nothing at all."]
+  ["Treat it as only a personal preference unless the person herself uses the word ‘abuse’.","Focus on the single incident and avoid considering whether there is a repeated pattern.","Wait for physical injury before treating the behaviour as a serious warning sign."],
+  ["Push for an immediate public confrontation so the other person knows the behaviour has been noticed.","Make the decision for the person affected because urgency matters more than her or his preferences.","Advise doing nothing until every fact is certain, even if there is an immediate safety concern."],
+  ["Ask for a complete account first so you can decide whether the person deserves support.","Contact family or authorities immediately without discussing privacy, wishes or possible retaliation.","Give one firm instruction and withdraw support if the person chooses a different path."],
+  ["Repeat the claim with the word ‘allegedly’ even though the source and context have not been checked.","Treat a widely shared screenshot or clip as enough to establish the full story.","Refuse to consider any evidence until a court or authority has made a final finding."],
+  ["Choose safety alone even if the response unnecessarily removes all choice from the person affected.","Choose public accountability first even if it exposes private information and raises immediate risk.","Choose procedural fairness alone even if urgent safety needs are being ignored."]
  ],
  teen:[
-  ["Ignore it unless someone is physically hurt.","Let friends decide whether the behaviour is okay.","Assume jealousy or pressure always proves love."],
-  ["Handle it alone so adults never find out.","Create a public confrontation for everyone to watch.","Give in to the pressure so the argument ends."],
-  ["Ask for every private detail before being supportive.","Turn the story into group-chat gossip.","Promise to solve everything without getting adult help."],
-  ["Repost the screenshot because lots of people already did.","Pick a side based only on popularity.","Share private information so people online can investigate."],
-  ["Protect the group’s reputation first.","Start a fight even if that makes the situation less safe.","Do nothing because the situation is complicated."]
+  ["Treat it as normal relationship or friendship drama unless an adult has already called it abuse.","Focus on one message or joke and ignore whether the same pressure keeps happening.","Wait until someone is physically injured before asking for help."],
+  ["Handle the problem alone first so friends or adults do not think you cannot cope.","Create a public confrontation so everyone can see who is right.","Give in for now to stop the pressure, then try to fix the problem later."],
+  ["Ask for every detail before deciding whether to support your friend.","Tell the whole friend group immediately so nobody can say you hid anything.","Give one piece of advice and stop helping if your friend does not follow it."],
+  ["Repost the screenshot with a warning label because many people have already seen it.","Choose the account given by the most popular or confident person.","Ignore the report completely until adults prove every detail."],
+  ["Protect the friendship group first so nobody gets embarrassed.","Focus only on proving who is right, even if that makes someone less safe.","Take over the decision because the person affected may be too upset to choose."]
  ],
  child:[
-  ["Keep quiet because older people always know best.","Wait until someone gets badly hurt before telling anyone.","Try to solve the whole problem alone."],
-  ["Do what the person asks so they do not get upset.","Post about it online so strangers can decide.","Fight the person even if it is dangerous."],
-  ["Ask the child for every detail before helping.","Keep the secret because a friend told you first.","Promise you will fix everything without telling a safe adult."],
-  ["Share the message or picture with friends as proof.","Believe the person with the most followers.","Give private information to strangers so they can help."],
-  ["Keep the family or school looking good even if someone feels unsafe.","Be brave by confronting a dangerous adult alone.","Give up if the first adult does not listen."]
+  ["Keep watching for a while because maybe the uncomfortable feeling will go away.","Tell only another child first and wait to see what they think.","Say nothing unless someone gets badly hurt."],
+  ["Try to solve the problem alone before bothering an adult.","Do what the person asks this time so they do not get upset, then avoid them later.","Tell lots of people your age so everyone can decide what should happen."],
+  ["Ask your friend to explain every detail before you get an adult.","Promise to keep it only between children because your friend trusted you.","Try to fix the whole problem yourself so your friend does not get in trouble."],
+  ["Share the message or picture with a friend as proof before showing an adult.","Believe the person who sounds most confident because they probably know more.","Ignore the information because children should never have to think about evidence."],
+  ["Keep the school or family from being embarrassed, even if someone still feels unsafe.","Be brave by confronting a bigger child or adult yourself.","Give up if the first safe adult does not understand or help."]
  ]
 };
-
 const FORMAT_BY_STAGE=[
  ["SPOT THE RED FLAG","WHAT MATTERS MOST?","MYTH OR REALITY","QUICK READ"],
  ["WHAT WOULD YOU DO?","BUILD A RESPONSE","BOUNDARY CHECK","PRESSURE TEST"],
@@ -243,7 +243,7 @@ function buildPath(pathId){
      const scenario=(stage===1?base:stage===2?base+" The situation is not improving.":stage===3?base+" THREE DAYS LATER: the people around "+s.name+" now have to decide how to help.":stage===4?base+" WAIT. NEW INFORMATION is being shared through "+s.channel+".":base+" TWO MONTHS LATER: the issue now involves more people and stronger consequences.")+" "+stageLead(p.level,stage);
      return{
        id:pathId+"-s"+stage+"q"+(idx+1),path:pathId,stage,number:idx+1,storyId:arc.storyId,
-       topic:t.id,format,skill:t.skill,scenario,answers:choice.answers,correct:choice.correct,
+       topic:t.id,format,skill:SKILLS_BY_STAGE[stage-1][hash(key+"skill")%SKILLS_BY_STAGE[stage-1].length],scenario,answers:choice.answers,correct:choice.correct,
        consequence:consequenceFor(t,stage,p.level),why:t.why,remember:t.remember,learn:SOURCES[t.source].url,sourceName:SOURCES[t.source].name,
        boss:idx===count-1
      };
