@@ -90,7 +90,16 @@ function bindTop(){
   const g=document.getElementById("glossaryBtn"); if(g)g.onclick=glossary;
   const t=document.getElementById("textSizeBtn"); if(t)t.onclick=cycleTextScale;
 }
-function shell(html,extra=""){applyTextScale();app.innerHTML=topbar(extra)+html;bindTop();window.scrollTo({top:0,behavior:"auto"})}
+function applyGameTheme(){
+  const id=state.selectedPath||"neutral";
+  document.documentElement.dataset.game=id;
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta){
+    const p=getComputedStyle(document.documentElement).getPropertyValue("--navy").trim();
+    if(p)meta.setAttribute("content",p);
+  }
+}
+function shell(html,extra=""){applyTextScale();applyGameTheme();app.innerHTML=topbar(extra)+html;bindTop();window.scrollTo({top:0,behavior:"auto"})}
 
 function welcome(){
   shell(`<section class="hero hero-main">
@@ -112,6 +121,7 @@ function welcome(){
 }
 
 function chooseAge(){
+  document.documentElement.dataset.game="neutral";
   shell(`<section class="card intro-card">
     <div class="eyebrow">STEP 1 OF 2</div>
     <h2>Which age group should this game be written for?</h2>
