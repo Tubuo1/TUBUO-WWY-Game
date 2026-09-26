@@ -160,25 +160,160 @@ const THEMES={
 
 const DISTRACTORS={
  adult:[
-  ["Treat it as only a personal preference unless the person herself uses the word ‘abuse’.","Focus on the single incident and avoid considering whether there is a repeated pattern.","Wait for physical injury before treating the behaviour as a serious warning sign."],
-  ["Push for an immediate public confrontation so the other person knows the behaviour has been noticed.","Make the decision for the person affected because urgency matters more than her or his preferences.","Advise doing nothing until every fact is certain, even if there is an immediate safety concern."],
-  ["Ask for a complete account first so you can decide whether the person deserves support.","Contact family or authorities immediately without discussing privacy, wishes or possible retaliation.","Give one firm instruction and withdraw support if the person chooses a different path."],
-  ["Repeat the claim with the word ‘allegedly’ even though the source and context have not been checked.","Treat a widely shared screenshot or clip as enough to establish the full story.","Refuse to consider any evidence until a court or authority has made a final finding."],
-  ["Choose safety alone even if the response unnecessarily removes all choice from the person affected.","Choose public accountability first even if it exposes private information and raises immediate risk.","Choose procedural fairness alone even if urgent safety needs are being ignored."]
+  [
+   "Treat it as only a personal preference unless the person affected uses the word ‘abuse’.",
+   "Focus on the single incident and avoid considering whether there is a repeated pattern.",
+   "Wait for physical injury before treating the behaviour as a serious warning sign.",
+   "Assume jealousy or protectiveness makes the behaviour less concerning.",
+   "Treat the person’s good reputation as evidence that the behaviour cannot be harmful.",
+   "Decide the issue is only a private disagreement because it happens in a relationship or family.",
+   "Assume the behaviour is harmless if the person causing it says they meant well.",
+   "Look mainly at whether other people think the behaviour is normal."
+  ],
+  [
+   "Push for an immediate public confrontation so the other person knows the behaviour has been noticed.",
+   "Make the decision for the person affected because urgency matters more than their preferences.",
+   "Advise doing nothing until every fact is certain, even if there is an immediate safety concern.",
+   "Tell the person affected exactly what they must do and treat disagreement as refusing help.",
+   "Share the situation with a wide group so more people can pressure a solution.",
+   "Focus first on getting an apology rather than on safety and choice.",
+   "Use the most dramatic available response because strong action is always safer.",
+   "Wait for the situation to become more serious before discussing support."
+  ],
+  [
+   "Ask for a complete account first so you can decide whether the person deserves support.",
+   "Contact family or authorities immediately without discussing privacy, wishes or possible retaliation.",
+   "Give one firm instruction and withdraw support if the person chooses a different path.",
+   "Promise secrecy in every circumstance, even if a child or someone else is in immediate danger.",
+   "Make the person repeat painful details to several people so everyone hears the same story.",
+   "Take over all decisions because someone who is frightened cannot make useful choices.",
+   "Treat returning to a relationship or changing a plan as proof the earlier disclosure was unreliable.",
+   "Focus on why the person did not act sooner instead of what support is useful now."
+  ],
+  [
+   "Repeat the claim with the word ‘allegedly’ even though the source and context have not been checked.",
+   "Treat a widely shared screenshot or clip as enough to establish the full story.",
+   "Refuse to consider any evidence until a court or authority has made a final finding.",
+   "Choose the version told by the person with the strongest reputation or largest audience.",
+   "Assume one inconsistency proves the whole account false.",
+   "Assume one convincing detail proves every surrounding claim true.",
+   "Publish names and private information so strangers can help investigate.",
+   "Ignore uncertainty and fill the missing parts with what seems most likely."
+  ],
+  [
+   "Choose safety alone even if the response unnecessarily removes all choice from the person affected.",
+   "Choose public accountability first even if it exposes private information and raises immediate risk.",
+   "Choose procedural fairness alone even if urgent safety needs are being ignored.",
+   "Treat privacy as the only concern even when there is a serious and immediate safety risk.",
+   "Choose the fastest solution even if it depends on assumptions that have not been checked.",
+   "Let family or community reputation decide what should happen.",
+   "Treat support and evidence as competing goals, so only one of them can be taken seriously.",
+   "Assume the same response is appropriate in every country, relationship and support system."
+  ]
  ],
  teen:[
-  ["Treat it as normal relationship or friendship drama unless an adult has already called it abuse.","Focus on one message or joke and ignore whether the same pressure keeps happening.","Wait until someone is physically injured before asking for help."],
-  ["Handle the problem alone first so friends or adults do not think you cannot cope.","Create a public confrontation so everyone can see who is right.","Give in for now to stop the pressure, then try to fix the problem later."],
-  ["Ask for every detail before deciding whether to support your friend.","Tell the whole friend group immediately so nobody can say you hid anything.","Give one piece of advice and stop helping if your friend does not follow it."],
-  ["Repost the screenshot with a warning label because many people have already seen it.","Choose the account given by the most popular or confident person.","Ignore the report completely until adults prove every detail."],
-  ["Protect the friendship group first so nobody gets embarrassed.","Focus only on proving who is right, even if that makes someone less safe.","Take over the decision because the person affected may be too upset to choose."]
+  [
+   "Treat it as normal relationship or friendship drama unless an adult has already called it abuse.",
+   "Focus on one message or joke and ignore whether the same pressure keeps happening.",
+   "Wait until someone is physically injured before asking for help.",
+   "Assume jealousy means the person cares deeply.",
+   "Decide that behaviour is harmless if lots of students laugh about it.",
+   "Treat popularity as evidence that someone could not be causing harm.",
+   "Assume pressure is normal because the people involved are dating.",
+   "Ignore an uncomfortable feeling because teenagers sometimes overreact."
+  ],
+  [
+   "Handle the problem alone first so friends or adults do not think you cannot cope.",
+   "Create a public confrontation so everyone can see who is right.",
+   "Give in for now to stop the pressure, then try to fix the problem later.",
+   "Tell the entire class or friend group so they can vote on what should happen.",
+   "Confront an older or more powerful person alone to prove you are not scared.",
+   "Wait until the situation becomes worse before telling a trusted adult.",
+   "Delete every message immediately, including anything that might later help explain what happened.",
+   "Make a friend follow your plan even if they say it could make them less safe."
+  ],
+  [
+   "Ask for every detail before deciding whether to support your friend.",
+   "Tell the whole friend group immediately so nobody can say you hid anything.",
+   "Give one piece of advice and stop helping if your friend does not follow it.",
+   "Promise to keep everything secret from adults no matter how unsafe the situation becomes.",
+   "Try to investigate the person yourself before telling a trusted adult.",
+   "Make the friend explain why they did not speak up sooner.",
+   "Turn the disclosure into a confrontation between groups of friends.",
+   "Assume you must solve the whole problem because your friend chose you to tell."
+  ],
+  [
+   "Repost the screenshot with a warning label because many people have already seen it.",
+   "Choose the account given by the most popular or confident person.",
+   "Ignore the report completely until adults prove every detail.",
+   "Treat a cropped screenshot as the full conversation.",
+   "Assume repeated rumours become more reliable when enough people share them.",
+   "Add missing details based on what usually happens in similar stories.",
+   "Send private material to more classmates so they can help decide what is true.",
+   "Treat one contradiction as proof that nothing harmful happened."
+  ],
+  [
+   "Protect the friendship group first so nobody gets embarrassed.",
+   "Focus only on proving who is right, even if that makes someone less safe.",
+   "Take over the decision because the person affected may be too upset to choose.",
+   "Choose the response that will get the most attention online.",
+   "Keep adults out of the situation even when it is too serious for teenagers to manage safely.",
+   "Put privacy above everything, even when someone may be in immediate danger.",
+   "Put punishment above safety, support and accurate information.",
+   "Use the same response for every situation because clear rules are always better than context."
+  ]
  ],
  child:[
-  ["Keep watching for a while because maybe the uncomfortable feeling will go away.","Tell only another child first and wait to see what they think.","Say nothing unless someone gets badly hurt."],
-  ["Try to solve the problem alone before bothering an adult.","Do what the person asks this time so they do not get upset, then avoid them later.","Tell lots of people your age so everyone can decide what should happen."],
-  ["Ask your friend to explain every detail before you get an adult.","Promise to keep it only between children because your friend trusted you.","Try to fix the whole problem yourself so your friend does not get in trouble."],
-  ["Share the message or picture with a friend as proof before showing an adult.","Believe the person who sounds most confident because they probably know more.","Ignore the information because children should never have to think about evidence."],
-  ["Keep the school or family from being embarrassed, even if someone still feels unsafe.","Be brave by confronting a bigger child or adult yourself.","Give up if the first safe adult does not understand or help."]
+  [
+   "Keep watching for a while because maybe the uncomfortable feeling will go away.",
+   "Tell only another child first and wait to see what they think.",
+   "Say nothing unless someone gets badly hurt.",
+   "Assume an older person is right because they are older.",
+   "Decide it is safe if the person says they are only joking.",
+   "Ignore the feeling because being brave means not complaining.",
+   "Assume family members or teachers can never cross a boundary.",
+   "Think a gift means the person must be kind and trustworthy."
+  ],
+  [
+   "Try to solve the problem alone before bothering an adult.",
+   "Do what the person asks this time so they do not get upset, then avoid them later.",
+   "Tell lots of people your age so everyone can decide what should happen.",
+   "Confront a bigger child or adult alone to show you are brave.",
+   "Wait several days before telling anyone, even if you feel unsafe now.",
+   "Delete everything and pretend it did not happen.",
+   "Keep the secret because you promised, even though it makes you scared.",
+   "Ask the person who is worrying you to decide which adult you may tell."
+  ],
+  [
+   "Ask your friend to explain every detail before you get an adult.",
+   "Promise to keep it only between children because your friend trusted you.",
+   "Try to fix the whole problem yourself so your friend does not get in trouble.",
+   "Tell everyone at school so your friend has lots of helpers.",
+   "Ask your friend to confront the person while you watch.",
+   "Stop helping if your friend becomes quiet or changes their mind.",
+   "Decide whether the story is true before you tell a safe adult.",
+   "Keep asking questions even if your friend says they do not want to talk more."
+  ],
+  [
+   "Share the message or picture with a friend as proof before showing an adult.",
+   "Believe the person who sounds most confident because they probably know more.",
+   "Ignore the information because children should never have to think about evidence.",
+   "Assume a profile picture proves who an online person really is.",
+   "Fill in missing parts of a story with what you think probably happened.",
+   "Keep a worrying message secret because it might embarrass someone.",
+   "Send the message to several children so they can compare opinions.",
+   "Decide that a rumour is true because many children repeat it."
+  ],
+  [
+   "Keep the school or family from being embarrassed, even if someone still feels unsafe.",
+   "Be brave by confronting a bigger child or adult yourself.",
+   "Give up if the first safe adult does not understand or help.",
+   "Try to keep everyone happy even if that means ignoring your own boundary.",
+   "Choose the answer that keeps the secret rather than the one that gets safe help.",
+   "Take responsibility for stopping adults from behaving violently.",
+   "Help a friend by promising you will never tell any adult.",
+   "Wait until you are completely sure what happened before asking a safe adult for help."
+  ]
  ]
 };
 const FORMAT_BY_STAGE=[
@@ -192,7 +327,7 @@ const FORMAT_BY_STAGE=[
 function fill(s,x){return s.replaceAll("{name}",x.name).replaceAll("{place}",x.place).replaceAll("{setting}",x.setting).replaceAll("{channel}",x.channel)}
 function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function shuffled(arr,seed){const a=arr.slice();let s=seed>>>0;for(let i=a.length-1;i>0;i--){s=(Math.imul(s,1664525)+1013904223)>>>0;const j=s%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
-function rotateAnswers(correct,distractors,key){const all=[correct,...distractors.slice(0,3)];const r=hash(key)%4;const answers=all.slice(r).concat(all.slice(0,r));return{answers,correct:answers.indexOf(correct)}}
+function rotateAnswers(correct,distractors,key){const wrong=shuffled(distractors,hash(key+"-wrong")).slice(0,3);const all=[correct,...wrong];const r=hash(key)%4;const answers=all.slice(r).concat(all.slice(0,r));return{answers,correct:answers.indexOf(correct)}}
 
 function stageLead(level,stage){
  const adult=[
