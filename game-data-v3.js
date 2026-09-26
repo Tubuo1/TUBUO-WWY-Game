@@ -329,6 +329,144 @@ function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCod
 function shuffled(arr,seed){const a=arr.slice();let s=seed>>>0;for(let i=a.length-1;i>0;i--){s=(Math.imul(s,1664525)+1013904223)>>>0;const j=s%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
 function rotateAnswers(correct,distractors,key){const wrong=shuffled(distractors,hash(key+"-wrong")).slice(0,3);const all=[correct,...wrong];const r=hash(key)%4;const answers=all.slice(r).concat(all.slice(0,r));return{answers,correct:answers.indexOf(correct)}}
 
+const MOMENTS={
+ adult:[
+  "A friend nearby says, “Maybe you are reading too much into it.”",
+  "The person affected asks for help but says she does not want a public confrontation.",
+  "A voice note gives only part of what happened, and people are already forming opinions.",
+  "A relative says the family’s reputation should come first.",
+  "A colleague witnessed one part of the incident but not what happened before it.",
+  "Someone suggests putting the whole story on social media tonight.",
+  "The person causing the harm apologizes and says it will never happen again.",
+  "A practical issue — money, transport or housing — makes an immediate decision harder.",
+  "Two friends agree something is wrong but disagree about the safest response.",
+  "The person affected says, “Please do not decide for me. Help me think.”",
+  "A bystander wants to help but is worried that a confrontation could make things worse.",
+  "A new message arrives that changes one detail but does not answer every question."
+ ],
+ teen:[
+  "A friend says, “Ignore it. People will forget by tomorrow.”",
+  "The class group chat has started taking sides.",
+  "Someone shares a screenshot that shows only part of the conversation.",
+  "A close friend wants to help but is afraid of becoming the next target.",
+  "There is school the next morning, so avoiding everyone is not realistic.",
+  "A popular student says the behaviour is normal and everyone should relax.",
+  "An older student offers to ‘sort it out’ by confronting someone after school.",
+  "A trusted adult is available, but the teen is worried about being judged.",
+  "A friend says, “Promise you will not tell anyone, no matter what happens.”",
+  "A private message appears just as rumours start spreading.",
+  "The person affected wants support but does not want the whole school to know.",
+  "Two friends suggest opposite responses, and both sound reasonable at first."
+ ],
+ child:[
+  "Another child says, “Maybe we should keep it secret so nobody gets in trouble.”",
+  "A friend offers to help but wants to handle it without any adults.",
+  "The first grown-up nearby looks busy and does not notice what is happening.",
+  "Someone says, “It was only a joke,” even though the child still feels uncomfortable.",
+  "A message appears in a game chat while the child is at home.",
+  "A cousin says older people should always be obeyed.",
+  "The child worries that telling will make everyone angry.",
+  "A friend says, “If we tell, they might say we are lying.”",
+  "The first adult the child tells does not listen carefully.",
+  "The child has to decide whether to stay quiet or ask another safe adult.",
+  "A friend wants to post about it online so other children can help.",
+  "The situation happens again, and this time the child recognizes the uncomfortable feeling."
+ ]
+};
+
+const OPENERS={
+ adult:[
+  "It starts as an ordinary day.",
+  "Nothing about the moment looks dramatic at first.",
+  "A small detail changes the mood.",
+  "The conversation takes an uncomfortable turn.",
+  "What looked private begins affecting everyday life.",
+  "A normal routine suddenly feels less normal.",
+  "Someone close notices a pattern that is getting harder to ignore.",
+  "The situation becomes complicated because people care about one another.",
+  "There is no perfect response waiting in the room.",
+  "The difficult part is deciding what matters first."
+ ],
+ teen:[
+  "It begins like a normal school day.",
+  "The first sign appears in a message.",
+  "At first, friends treat it like ordinary drama.",
+  "The situation changes during a conversation between friends.",
+  "What happens online follows everyone back to school.",
+  "A joke stops feeling funny.",
+  "A private issue starts becoming public.",
+  "Someone has to decide whether fitting in matters more than doing the right thing.",
+  "The pressure grows because friends are watching.",
+  "Nobody wants to make the situation bigger — but ignoring it also has a cost."
+ ],
+ child:[
+  "It happens during an ordinary day.",
+  "At first, it seems like a small moment.",
+  "Something makes the child’s stomach feel uncomfortable.",
+  "A game or visit stops feeling fun.",
+  "The child remembers that safe adults are there to help.",
+  "A friend needs help with a tricky situation.",
+  "The important clue is how the child feels and what the other person is asking.",
+  "The child has a choice about what to do next.",
+  "A grown-up is nearby, but speaking up can still feel hard.",
+  "The moment calls for a safe, simple decision."
+ ]
+};
+
+const STAGE_STEMS={
+ adult:[
+  ["What deserves the most attention here?","What is the clearest warning sign?","What should not be brushed aside?","Which detail changes how you read the situation?"],
+  ["What is the strongest next move?","What response protects choice without ignoring risk?","What would you do next?","Which response is firm without taking over?"],
+  ["Someone now asks for help. What should guide your response?","How can you support without becoming another person making decisions for them?","What kind of help is most useful now?","Which response keeps dignity and safety together?"],
+  ["New information appears. What should you do with it?","Which response handles the evidence most responsibly?","What should be verified before stronger claims are made?","How do you avoid turning uncertainty into a fact?"],
+  ["The stakes are higher now. Which response holds up best?","Which choice balances safety, agency, evidence and accountability?","What would a careful, responsible response look like now?","Which option avoids the tempting shortcut?"]
+ ],
+ teen:[
+  ["What should stand out first?","Which detail is the real warning sign?","What is easy to dismiss but important to notice?","What makes this more than ordinary drama?"],
+  ["What would you do next?","Which response is safest and most respectful?","What choice avoids making things worse?","Which next step makes the most sense?"],
+  ["A friend needs support now. What should you do?","How can you help without taking over?","Which response is supportive without becoming gossip?","What is the strongest way to be a good friend here?"],
+  ["New messages are circulating. What matters most before reacting?","How should the new information be handled?","What should you check before adding your voice?","Which response keeps privacy and fairness in view?"],
+  ["This is now a hard choice. What holds up best?","Which option protects safety, respect and fairness together?","What response would you still stand by tomorrow?","Which choice is strongest even if it is not the most dramatic?"]
+ ],
+ child:[
+  ["What is the important thing to notice?","Which part tells you this is not okay?","What should the child pay attention to?","Which clue matters most?"],
+  ["What is the safest next choice?","What should the child do next?","Which choice gets the child closer to safe help?","What is the best next step?"],
+  ["A friend needs help. What should happen now?","How can the child be a good friend without solving everything alone?","Which choice brings in safe help?","What should the child do instead of becoming the investigator?"],
+  ["There is new information. What should the child do with it?","Which choice protects privacy and gets adult help?","What is the safest way to handle the message or story?","What should happen before children start sharing it around?"],
+  ["This is a harder case. Which choice is safest?","Which answer keeps boundaries and safe help together?","What is the strongest choice when the situation feels confusing?","Which option remembers that children do not have to solve dangerous problems alone?"]
+ ]
+};
+
+function sceneFor(p,t,s,stage,variant,key,boss){
+  const opener=OPENERS[p.level][hash(key+"-opener")%OPENERS[p.level].length];
+  const moment=MOMENTS[p.level][variant%MOMENTS[p.level].length];
+  const stemPool=STAGE_STEMS[p.level][stage-1];
+  const stem=stemPool[hash(key+"-stem")%stemPool.length];
+  const base=fill(t.scene,s);
+  const bridge=stage===1?"":stage===2?" A little later, another decision has to be made.":stage===3?" Later, somebody asks for help.":stage===4?" Then new information starts circulating.":" By the end of the week, more people are involved and the consequences are harder to ignore.";
+  const bossLine=boss?" FINAL CASE OF THIS STAGE: More than one option may sound reasonable at first.":"";
+  return opener+" "+base+" "+moment+bridge+bossLine+" "+stem;
+}
+
+function contextualAnswer(text,p,s,stage,variant){
+  const tails={
+   adult:[" Start with the person’s safety and choices."," Keep the response proportionate to what is actually known."," Do not turn support into control."," Protect privacy while keeping options open."," Avoid creating a new confrontation just to feel decisive."," Keep evidence and dignity in the same frame."],
+   teen:[" Bring in a trusted adult when the situation is too big for friends to manage safely."," Do not turn the situation into group-chat entertainment."," Respect the other person’s choice and privacy."," Choose the response that reduces pressure instead of adding more."," Keep the focus on safety, not popularity."," Avoid a public showdown if a quieter safe option works better."],
+   child:[" Tell a safe adult and do not handle a dangerous situation alone."," A child can keep asking safe adults until someone listens."," Do not share private pictures or messages with other children."," Getting help is stronger than keeping an unsafe secret."," The child does not have to confront a bigger person."," A safe choice should make the child less alone, not more."]
+  };
+  const tail=tails[p.level][hash(s.name+"-"+stage+"-"+variant+"-"+text)%tails[p.level].length];
+  return text+tail;
+}
+
+function uniqueTakeaway(t,p,s,stage,variant){
+  const suffixes={
+   adult:[" Notice patterns, not excuses."," Safety and agency belong together."," Serious claims deserve careful handling."," Help should expand choices, not shrink them."," Privacy matters even when emotions run high."," Being decisive is not the same as being reckless."],
+   teen:[" Respect is still respect when friends are watching."," A group chat is not a courtroom."," Asking for help is not making drama."," Pressure does not become okay because it is common."," Privacy is part of respect."," A safe friend does not turn someone’s story into content."],
+   child:[" Safe adults are there to help."," You can tell another safe adult."," Your body and boundaries matter."," Unsafe secrets should not stay secret."," Getting help can be brave."," Children do not have to solve adult problems."]
+  };
+  return t.remember+suffixes[p.level][hash(s.place+"-"+stage+"-"+variant+"-"+t.id)%suffixes[p.level].length];
+}
+
 function stageLead(level,stage){
  const adult=[
   "What is the most important thing to notice first?",
@@ -365,24 +503,33 @@ function consequenceFor(t,stage,level){
 function buildPath(pathId){
  const p=PATHS[pathId],themes=THEMES[pathId],settings=SETTINGS[pathId];
  let arcs=[];
- for(const s of settings){for(const t of themes){arcs.push({t,s,storyId:pathId+"-"+t.id+"-"+s.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")})}}
- arcs=shuffled(arcs,hash(pathId+"-season1"));
+ const variants=8;
+ for(const s of settings){
+  for(const t of themes){
+   for(let variant=0;variant<variants;variant++){
+    arcs.push({t,s,variant,storyId:pathId+"-"+t.id+"-"+s.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-v"+variant});
+   }
+  }
+ }
+ arcs=shuffled(arcs,hash(pathId+"-season1-unique"));
+ let cursor=0;
  const stages=COUNTS.map((count,i)=>{
    const stage=i+1;
-   const selected=shuffled(arcs,hash(pathId+"-stage-"+stage)).slice(0,count);
+   const selected=arcs.slice(cursor,cursor+count);
+   cursor+=count;
    const questions=selected.map((arc,idx)=>{
-     const t=arc.t,s=arc.s,correctText=correctFor(t,stage),key=arc.storyId+"-"+stage;
-     const choice=rotateAnswers(correctText,DISTRACTORS[p.level][stage-1],key);
+     const t=arc.t,s=arc.s,variant=arc.variant,key=arc.storyId+"-s"+stage+"-q"+idx;
      const boss=idx===count-1;
+     const correctText=contextualAnswer(correctFor(t,stage),p,s,stage,variant);
+     const choice=rotateAnswers(correctText,DISTRACTORS[p.level][stage-1],key);
      const format=boss?"BOSS CASE":FORMAT_BY_STAGE[stage-1][hash(key+"format")%FORMAT_BY_STAGE[stage-1].length];
-     const base=fill(t.scene,s);
-     const chapter=stage===1?base:stage===2?base+" The situation is not improving.":stage===3?base+" THREE DAYS LATER: the people around "+s.name+" now have to decide how to help.":stage===4?base+" WAIT. NEW INFORMATION is being shared through "+s.channel+".":base+" TWO MONTHS LATER: the issue now involves more people and stronger consequences.";
-     const bossLine=boss?(p.level==="child"?" BOSS CASE: Choose the safest answer without asking a child to handle a dangerous situation alone.":p.level==="teen"?" BOSS CASE: More than one option may sound helpful. Choose the one that protects safety and respect without taking over.":" BOSS CASE: More than one option may sound reasonable. Choose the one that keeps safety, agency, evidence and accountability in view."):"";
-     const scenario=chapter+bossLine+" "+stageLead(p.level,stage);
+     const scenario=sceneFor(p,t,s,stage,variant,key,boss);
      return{
        id:pathId+"-s"+stage+"q"+(idx+1),path:pathId,stage,number:idx+1,storyId:arc.storyId,
        topic:t.id,format,skill:SKILLS_BY_STAGE[stage-1][hash(key+"skill")%SKILLS_BY_STAGE[stage-1].length],scenario,answers:choice.answers,correct:choice.correct,
-       consequence:consequenceFor(t,stage,p.level),why:t.why,remember:t.remember,learn:SOURCES[t.source].url,sourceName:SOURCES[t.source].name,
+       consequence:consequenceFor(t,stage,p.level)+" "+MOMENTS[p.level][(variant+stage)%MOMENTS[p.level].length],
+       why:t.why+" In this situation, the extra context matters because the safest response should fit what is actually happening, not a stereotype or shortcut.",
+       remember:uniqueTakeaway(t,p,s,stage,variant),learn:SOURCES[t.source].url,sourceName:SOURCES[t.source].name,
        boss
      };
    });
