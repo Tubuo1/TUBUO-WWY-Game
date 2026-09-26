@@ -29,6 +29,9 @@ function load(){
 let state=load();
 if(!state.settings)state.settings={};
 if(!Number.isInteger(state.settings.textScale))state.settings.textScale=0;
+if(typeof state.settings.sound!=="boolean")state.settings.sound=true;
+if(typeof state.settings.motion!=="boolean")state.settings.motion=!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(typeof state.settings.haptics!=="boolean")state.settings.haptics=true;
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function ps(id=state.selectedPath){if(!id)return null;if(!state.pathStates[id])state.pathStates[id]=freshPath();return state.pathStates[id]}
@@ -61,6 +64,88 @@ function totalProgress(id){
   return Math.round(answered/200*100);
 }
 
+let audioCtx=null;
+const SOUND_PROFILES={
+ "adult-f":{root:392,wave:"sine"},"adult-m":{root:330,wave:"triangle"},
+ "teen-f":{root:494,wave:"sine"},"teen-m":{root:440,wave:"triangle"},
+ "child-f":{root:587,wave:"sine"},"child-m":{root:523,wave:"sine"},
+ neutral:{root:392,wave:"sine"}
+};
+function soundProfile(){return SOUND_PROFILES[state.selectedPath]||SOUND_PROFILES.neutral}
+function ensureAudio(){
+ if(!state.settings.sound)return null;
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC)return null;
+ if(!audioCtx)audioCtx=new AC();
+ if(audioCtx.state==="suspended")audioCtx.resume().catch(()=>{});
+ return audioCtx;
+}
+function tone(freq,dur=0.09,delay=0,gain=0.035,type){
+ const ctx=ensureAudio();if(!ctx)return;
+ const o=ctx.createOscillator(),g=ctx.createGain(),now=ctx.currentTime+delay;
+ o.type=type||soundProfile().wave;o.frequency.setValueAtTime(freq,now);
+ g.gain.setValueAtTime(0.0001,now);g.gain.exponentialRampToValueAtTime(gain,now+0.012);g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
+ o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+dur+0.02);
+}
+function playCue(name){
+ if(!state.settings.sound)return;
+ const p=soundProfile(),r=p.root;
+ const seq={
+  select:[[r,0.055,0,.018]],
+  strong:[[r,0.07,0,.025],[r*1.25,0.08,.07,.028],[r*1.5,0.11,.15,.03]],
+  learn:[[r*.9,0.08,0,.018],[r,0.1,.09,.02]],
+  next:[[r*1.12,0.06,0,.018]],
+  pass:[[r,0.08,0,.025],[r*1.25,0.09,.08,.028],[r*1.5,0.11,.17,.03],[r*2,0.16,.28,.035]],
+  retry:[[r,0.08,0,.018],[r*.84,0.11,.09,.018]],
+  badge:[[r*1.25,0.09,0,.025],[r*1.5,0.11,.09,.03],[r*2,0.16,.2,.035]],
+  season:[[r,0.1,0,.025],[r*1.25,0.1,.1,.03],[r*1.5,0.11,.2,.032],[r*2,0.18,.32,.04],[r*2.5,0.22,.48,.035]]
+ }[name]||[];
+ seq.forEach(([f,d,del,g])=>tone(f,d,del,g,p.wave));
+}
+function haptic(kind="tap"){
+ if(!state.settings.haptics||!("vibrate" in navigator))return;
+ const map={tap:12,strong:[18,28,18],learn:18,pass:[25,35,25],badge:[20,25,20,25,35],season:[30,35,30,35,60]};
+ try{navigator.vibrate(map[kind]||12)}catch(e){}
+}
+function toggleSound(){state.settings.sound=!state.settings.sound;save();refreshControls();if(state.settings.sound)playCue("select")}
+function toggleMotion(){state.settings.motion=!state.settings.motion;save();applyMotion();refreshControls()}
+function toggleHaptics(){state.settings.haptics=!state.settings.haptics;save();refreshControls();if(state.settings.haptics)haptic("tap")}
+function applyMotion(){document.documentElement.dataset.motion=state.settings.motion?"on":"off"}
+function refreshControls(){
+ const s=document.getElementById("soundBtn");if(s){s.textContent=state.settings.sound?"🔊":"🔇";s.setAttribute("aria-label",state.settings.sound?"Mute game sounds":"Turn game sounds on");s.setAttribute("aria-pressed",String(state.settings.sound))}
+ const m=document.getElementById("motionBtn");if(m){m.textContent=state.settings.motion?"✦":"—";m.setAttribute("aria-label",state.settings.motion?"Reduce game motion":"Turn game motion on");m.setAttribute("aria-pressed",String(state.settings.motion))}
+ const h=document.getElementById("hapticBtn");if(h){h.textContent=state.settings.haptics?"〰":"·";h.setAttribute("aria-label",state.settings.haptics?"Turn haptic taps off":"Turn haptic taps on");h.setAttribute("aria-pressed",String(state.settings.haptics))}
+}
+function celebrate(kind="pass"){
+ if(!state.settings.motion)return;
+ const g=game(),count=kind==="season"?28:kind==="badge"?18:12;
+ const layer=document.createElement("div");layer.className="celebration-layer";layer.setAttribute("aria-hidden","true");
+ const symbols=g&&g.level==="child"?["●","★","◆","✦"]:g&&g.level==="teen"?["✦","◆","●"]:["✦","·","◆"];
+ for(let i=0;i<count;i++){
+  const n=document.createElement("span");n.className="celebration-piece";n.textContent=symbols[i%symbols.length];
+  n.style.setProperty("--x",((i*37)%100)+"%");n.style.setProperty("--delay",(i%7)*.035+"s");n.style.setProperty("--drift",((i%5)-2)*26+"px");
+  layer.appendChild(n);
+ }
+ document.body.appendChild(layer);setTimeout(()=>layer.remove(),1700);
+}
+function checkpointText(s,index){
+ const done=index+1,total=s.questions.length,p=Math.round(done/total*100),g=game();
+ let label="";
+ if(done===Math.ceil(total*.25))label="¼ CHECKPOINT";
+ else if(done===Math.ceil(total*.5))label="HALFWAY";
+ else if(done===Math.ceil(total*.75))label="¾ CHECKPOINT";
+ if(!label)return "";
+ const lines=g.level==="child"?["Nice work. Keep noticing the clues.","Halfway there. Safe choices can be simple.","You are close. Keep thinking about safe help."]:g.level==="teen"?["Good pace. Keep thinking, not rushing.","Halfway. The situations get more complex from here.","Strong progress. Keep privacy, respect and safety together."]:["Good progress. Keep reading the context, not just the headline.","Halfway. Later decisions will ask you to balance more than one principle.","You are close. Stay careful with safety, agency and evidence."];
+ const idx=label==="¼ CHECKPOINT"?0:label==="HALFWAY"?1:2;
+ return '<div class="checkpoint"><b>'+label+'</b><span>'+esc(lines[idx])+'</span></div>';
+}
+function streakMessage(n){
+ const g=game();if(n<3)return "";
+ if(g.level==="child")return n>=7?"🌟 "+n+" thoughtful choices in a row":"✨ "+n+" strong choices in a row";
+ if(g.level==="teen")return n>=7?"🔥 "+n+" strong choices — keep the focus":"⚡ "+n+" strong choices in a row";
+ return n>=7?"✦ "+n+" careful decisions in a row":"✓ "+n+" strong choices in a row";
+}
+
 function applyTextScale(){
   document.documentElement.dataset.textScale=String(state.settings.textScale||0);
 }
@@ -82,13 +167,16 @@ function skillBars(skills){
   return `<div class="skill-profile">${skills.map(s=>`<div class="skill-row"><div class="skill-label"><span>${esc(s.name)}</span><b>${s.pct}%</b></div><div class="skill-track"><span style="width:${s.pct}%"></span></div></div>`).join("")}</div>`;
 }
 function topbar(extra=""){
-  return `<header class="topbar"><button class="brand-link" id="brandHome" aria-label="Game home"><span class="brand-mark">T</span><span><b>TUBUO WRITES</b><small>WHAT WOULD YOU DO?</small></span></button><div class="top-actions">${extra}<button class="mini-btn" id="glossaryBtn">GLOSSARY</button><button class="mini-btn" id="textSizeBtn" aria-label="Change text size">${state.settings.textScale===0?"A":state.settings.textScale===1?"A+":"A++"}</button><button class="mini-btn" id="helpBtn">NEED HELP?</button></div></header>`;
+  return `<header class="topbar"><button class="brand-link" id="brandHome" aria-label="Game home"><span class="brand-mark">T</span><span><b>TUBUO WRITES</b><small>WHAT WOULD YOU DO?</small></span></button><div class="top-actions">${extra}<button class="mini-btn icon-control" id="soundBtn" aria-label="Mute game sounds" aria-pressed="${state.settings.sound}">${state.settings.sound?"🔊":"🔇"}</button><button class="mini-btn icon-control" id="motionBtn" aria-label="Reduce game motion" aria-pressed="${state.settings.motion}">${state.settings.motion?"✦":"—"}</button><button class="mini-btn icon-control haptic-control" id="hapticBtn" aria-label="Turn haptic taps off" aria-pressed="${state.settings.haptics}">${state.settings.haptics?"〰":"·"}</button><button class="mini-btn" id="glossaryBtn">GLOSSARY</button><button class="mini-btn" id="textSizeBtn" aria-label="Change text size">${state.settings.textScale===0?"A":state.settings.textScale===1?"A+":"A++"}</button><button class="mini-btn" id="helpBtn">NEED HELP?</button></div></header>`;
 }
 function bindTop(){
   const b=document.getElementById("brandHome"); if(b)b.onclick=()=>state.selectedPath?home():welcome();
   const h=document.getElementById("helpBtn"); if(h)h.onclick=help;
   const g=document.getElementById("glossaryBtn"); if(g)g.onclick=glossary;
   const t=document.getElementById("textSizeBtn"); if(t)t.onclick=cycleTextScale;
+  const s=document.getElementById("soundBtn");if(s)s.onclick=toggleSound;
+  const m=document.getElementById("motionBtn");if(m)m.onclick=toggleMotion;
+  const hp=document.getElementById("hapticBtn");if(hp)hp.onclick=toggleHaptics;
 }
 function applyGameTheme(){
   const id=document.documentElement.dataset.forceNeutral==="1"?"neutral":(state.selectedPath||"neutral");
@@ -99,7 +187,7 @@ function applyGameTheme(){
     if(p)meta.setAttribute("content",p);
   }
 }
-function shell(html,extra=""){applyTextScale();applyGameTheme();app.innerHTML=topbar(extra)+html;bindTop();window.scrollTo({top:0,behavior:"auto"})}
+function shell(html,extra=""){applyTextScale();applyMotion();applyGameTheme();app.innerHTML=topbar(extra)+html;bindTop();refreshControls();window.scrollTo({top:0,behavior:"auto"})}
 
 function welcome(){
   shell(`<section class="hero hero-main">
