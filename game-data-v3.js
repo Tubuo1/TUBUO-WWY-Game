@@ -918,17 +918,35 @@ for(const id of Object.keys(PATHS))GAMES[id]=buildPath(id);
 
 function validate(){
  const report={paths:{},total:0,issues:[]};
+ const globalScenario=new Set(),globalStory=new Set(),globalAnswerSet=new Set(),globalIds=new Set();
+ const normalize=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
  for(const [id,g] of Object.entries(GAMES)){
-  let total=0,seen=new Set();
+  let total=0,seenScenario=new Set(),seenStory=new Set();
   g.stages.forEach((s,i)=>{
    total+=s.questions.length;
    if(s.questions.length!==COUNTS[i])report.issues.push(id+" stage "+(i+1)+" count");
    if(s.pass!==PASS[i])report.issues.push(id+" stage "+(i+1)+" pass");
-   s.questions.forEach(q=>{if(seen.has(q.scenario))report.issues.push(id+" duplicate scenario");seen.add(q.scenario);if(q.answers.length!==4||q.correct<0||q.correct>3)report.issues.push(q.id+" choices")});
+   if(s.questions.filter(q=>q.boss).length!==1)report.issues.push(id+" stage "+(i+1)+" boss count");
+   s.questions.forEach(q=>{
+    const scenario=normalize(q.scenario);
+    const answerSet=q.answers.map(normalize).sort().join("||");
+    if(seenScenario.has(scenario))report.issues.push(id+" duplicate scenario");
+    if(seenStory.has(q.storyId))report.issues.push(id+" duplicate story");
+    if(globalScenario.has(scenario))report.issues.push("global duplicate scenario: "+q.id);
+    if(globalStory.has(q.storyId))report.issues.push("global duplicate story: "+q.id);
+    if(globalAnswerSet.has(answerSet))report.issues.push("global duplicate answer set: "+q.id);
+    if(globalIds.has(q.id))report.issues.push("global duplicate id: "+q.id);
+    seenScenario.add(scenario);seenStory.add(q.storyId);
+    globalScenario.add(scenario);globalStory.add(q.storyId);globalAnswerSet.add(answerSet);globalIds.add(q.id);
+    if(q.answers.length!==4||q.correct<0||q.correct>3)report.issues.push(q.id+" choices");
+    if(!q.learn||!q.sourceName)report.issues.push(q.id+" source");
+    if(!q.why||!q.remember||!q.consequence)report.issues.push(q.id+" feedback");
+   });
   });
   report.paths[id]=total;report.total+=total;
   if(total!==200)report.issues.push(id+" total");
  }
+ report.unique={scenarios:globalScenario.size,stories:globalStory.size,answerSets:globalAnswerSet.size,ids:globalIds.size};
  return report;
 }
 const validation=validate();
