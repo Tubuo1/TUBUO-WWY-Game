@@ -1,0 +1,18 @@
+{
+  "name": "WHAT WOULD YOU DO? — TUBUO Writes",
+  "short_name": "WWYD",
+  "description": "An interactive GBV decision game by TUBUO Writes.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#002B6A",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
