@@ -47,7 +47,7 @@ For players under 18, the game asks only for a badge name or nickname and does n
 
 The content framework uses material from WHO, UNICEF, UN Women, UNFPA and the Convention on the Rights of the Child. Each decision includes a source-linked **Learn More** route.
 
-See [METHODOLOGY.md](METHODOLOGY.md) for the editorial and safeguarding framework.
+See [METHODOLOGY.md](METHODOLOGY.md) for the editorial and safeguarding framework and [QA_REPORT.md](QA_REPORT.md) for the Season 1 structural and safeguarding checks.
 
 ## Technical structure
 
