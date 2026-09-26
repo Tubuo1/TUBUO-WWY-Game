@@ -368,5 +368,5 @@ function methodology(){
   document.getElementById("methodReturn").onclick=()=>state.selectedPath?home():welcome();
 }
 
-welcome();
+if(state.selectedPath&&currentProfile())home();else welcome();
 })();
