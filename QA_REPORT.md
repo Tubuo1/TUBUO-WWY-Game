@@ -59,3 +59,23 @@ This is a public Season 1 release, not the end of editorial review.
 Future revisions should continue to test wording with safeguarding professionals, teachers, youth workers, men’s-engagement practitioners, survivor-support practitioners, parents and—using appropriate ethics and consent—young people from the age groups represented.
 
 Feedback should improve the game without weakening the core rules on consent, dignity, safety, privacy, evidence and non-violence.
+
+
+## Zero-repetition release gate
+
+The Season 1 content engine was rebuilt so that each path now draws from unique topic variants rather than recycling the same base scenario across stages.
+
+Current automated checks confirm:
+
+- 1,200/1,200 unique question IDs;
+- 1,200/1,200 unique story signatures;
+- 1,200/1,200 unique scenario texts after normalization;
+- 1,200/1,200 unique four-choice answer sets;
+- no within-path duplicate scenario;
+- no global duplicate scenario across the six games;
+- exactly one Boss Case per stage;
+- all 1,200 questions include feedback and a source.
+
+A separate near-duplicate review using word-set similarity found **no question pair above the 0.80 similarity threshold within any path** after the rebuild.
+
+The public build should fail QA rather than ship if an exact duplicate scenario, story signature, answer set or question ID is introduced.
