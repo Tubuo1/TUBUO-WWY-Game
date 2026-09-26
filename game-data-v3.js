@@ -800,7 +800,12 @@ function contextualAnswer(text,p,s,stage,variant){
    child:[" That gets "+s.name+" closer to safe adult help."," It means "+s.name+" does not have to solve the problem alone."," For "+s.name+", the safe choice is the one that brings in a trusted adult."," In "+s.place+", the child still has the right to ask another safe adult for help."]
   };
   const anchor=anchors[p.level][hash(s.name+"-"+s.place+"-"+stage+"-"+variant+"-"+text)%anchors[p.level].length];
-  return text+tail+anchor;
+  const variantAnchors={
+   adult:[" Start by naming the behaviour clearly."," Keep the next step practical."," Do not let urgency erase choice."," Check what is known before escalating."," Keep the response private where privacy protects safety."," Make room for the person affected to change their mind."," Avoid rewarding the loudest voice in the room."," Recheck risk if the situation changes."],
+   teen:[" Start with one safe next step."," Keep the group chat from becoming the solution."," Bring in an adult when friends have reached their limit."," Do not make popularity the test of what is right."," Protect private information while getting help."," Avoid turning support into a public spectacle."," Give the person affected room to choose."," Recheck the situation if new information appears."],
+   child:[" The next step should involve a safe adult."," The child can move away and ask for help."," A safe adult can handle the bigger problem."," The child does not need to prove everything first."," Private information should stay private."," If one adult does not help, another can be told."," The child should not confront a bigger person alone."," Asking for help again is allowed."]
+  };
+  return text+tail+anchor+variantAnchors[p.level][variant%variantAnchors[p.level].length];
 }
 
 function uniqueTakeaway(t,p,s,stage,variant){
