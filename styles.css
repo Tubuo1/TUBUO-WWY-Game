@@ -230,7 +230,7 @@ html[data-motion="on"][data-game^="adult"] .question-card,
 html[data-motion="on"][data-game^="adult"] .stage-card{animation:adultFade .28s ease-out}
 html[data-motion="on"] .checkpoint{animation:feedbackIn .3s ease-out}
 html[data-motion="on"] .streak-banner{animation:progressGlow .75s ease-out}
-html[data-motion="off"] *,@media(prefers-reduced-motion:reduce){animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html[data-motion="off"] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}\n@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 html[data-game="child-f"] .celebration-piece{color:#bf5d8e}
 html[data-game="child-m"] .celebration-piece{color:#168b96}
