@@ -238,14 +238,17 @@ function buildPath(pathId){
    const questions=selected.map((arc,idx)=>{
      const t=arc.t,s=arc.s,correctText=correctFor(t,stage),key=arc.storyId+"-"+stage;
      const choice=rotateAnswers(correctText,DISTRACTORS[p.level][stage-1],key);
-     const format=idx===count-1?"BOSS CASE":FORMAT_BY_STAGE[stage-1][hash(key+"format")%FORMAT_BY_STAGE[stage-1].length];
+     const boss=idx===count-1;
+     const format=boss?"BOSS CASE":FORMAT_BY_STAGE[stage-1][hash(key+"format")%FORMAT_BY_STAGE[stage-1].length];
      const base=fill(t.scene,s);
-     const scenario=(stage===1?base:stage===2?base+" The situation is not improving.":stage===3?base+" THREE DAYS LATER: the people around "+s.name+" now have to decide how to help.":stage===4?base+" WAIT. NEW INFORMATION is being shared through "+s.channel+".":base+" TWO MONTHS LATER: the issue now involves more people and stronger consequences.")+" "+stageLead(p.level,stage);
+     const chapter=stage===1?base:stage===2?base+" The situation is not improving.":stage===3?base+" THREE DAYS LATER: the people around "+s.name+" now have to decide how to help.":stage===4?base+" WAIT. NEW INFORMATION is being shared through "+s.channel+".":base+" TWO MONTHS LATER: the issue now involves more people and stronger consequences.";
+     const bossLine=boss?(p.level==="child"?" BOSS CASE: Choose the safest answer without asking a child to handle a dangerous situation alone.":p.level==="teen"?" BOSS CASE: More than one option may sound helpful. Choose the one that protects safety and respect without taking over.":" BOSS CASE: More than one option may sound reasonable. Choose the one that keeps safety, agency, evidence and accountability in view."):"";
+     const scenario=chapter+bossLine+" "+stageLead(p.level,stage);
      return{
        id:pathId+"-s"+stage+"q"+(idx+1),path:pathId,stage,number:idx+1,storyId:arc.storyId,
        topic:t.id,format,skill:SKILLS_BY_STAGE[stage-1][hash(key+"skill")%SKILLS_BY_STAGE[stage-1].length],scenario,answers:choice.answers,correct:choice.correct,
        consequence:consequenceFor(t,stage,p.level),why:t.why,remember:t.remember,learn:SOURCES[t.source].url,sourceName:SOURCES[t.source].name,
-       boss:idx===count-1
+       boss
      };
    });
    return{id:stage,title:p.stages[i],pass:PASS[i],questions};
