@@ -158,3 +158,18 @@ p{line-height:1.58}
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
+html[data-text-scale="1"]{font-size:112.5%}
+html[data-text-scale="2"]{font-size:125%}
+.decision-profile-block{margin:24px 0;text-align:left}
+.skill-profile{display:grid;gap:10px;margin-top:12px}
+.skill-row{display:grid;gap:6px}
+.skill-label{display:flex;justify-content:space-between;gap:12px;font-size:.9rem}
+.skill-label span{font-weight:800;color:var(--navy)}
+.skill-track{height:9px;border-radius:999px;background:#e8edf2;overflow:hidden}
+.skill-track>span{display:block;height:100%;background:var(--blue);border-radius:999px}
+.glossary-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 26px}
+.glossary-item{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:15px}
+.glossary-item b{color:var(--navy)}
+.glossary-item p{margin:.4rem 0 0}
+.season-award-btn{margin-top:14px}
+@media(max-width:700px){.glossary-list{grid-template-columns:1fr}}
