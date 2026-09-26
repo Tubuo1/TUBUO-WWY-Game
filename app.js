@@ -272,7 +272,7 @@ function results(s){
       <div><b>Strong areas</b><p>${strengths.length?strengths.map(x=>esc(x.name)+" "+x.pct+"%").join(" · "):"Keep playing"}</p></div>
       <div><b>Worth another look</b><p>${growth.length?growth.map(x=>esc(x.name)+" "+x.pct+"%").join(" · "):"Keep playing"}</p></div>
     </div>
-    ${passed&&s.id===5?`<div class="season-complete"><div class="trophy">🏆</div><b>SEASON 1 COMPLETE</b><p>${esc(currentProfile().displayName)}, you completed all 200 decisions in ${esc(g.label)}.</p></div>`:""}
+    ${passed&&s.id===5?`<div class="season-complete"><div class="trophy">🏆</div><b>SEASON 1 COMPLETE</b><p>${esc(currentProfile().displayName)}, you completed all 200 decisions in ${esc(g.label)}.</p><button class="btn btn-ghost season-award-btn" id="downloadSeason">DOWNLOAD SEASON 1 AWARD</button></div>`:""}
     <div class="actions center">
       ${passed&&s.id<5?`<button class="btn btn-primary" id="continueBtn">OPEN STAGE ${s.id+1} →</button>`:""}
       ${!passed?`<button class="btn btn-primary" id="retryBtn">TRY STAGE AGAIN</button>`:""}
@@ -283,6 +283,7 @@ function results(s){
   const c=document.getElementById("continueBtn");if(c)c.onclick=()=>{p.stage=s.id+1;p.index=0;save();showQuestion(p.stage,0)};
   const r=document.getElementById("retryBtn");if(r)r.onclick=()=>{s.questions.forEach(q=>delete p.answers[q.id]);delete p.completed[s.id];p.index=0;save();showQuestion(s.id,0)};
   const d=document.getElementById("downloadBadge");if(d)d.onclick=()=>downloadBadge(g.badges[s.id-1],s.id,pct);
+  const season=document.getElementById("downloadSeason");if(season)season.onclick=()=>downloadSeason();
 }
 
 function badgeCard(id,pct){
@@ -294,6 +295,25 @@ function badgeCard(id,pct){
     <small>SEASON 1 · Every choice changes the story.</small>
     <button class="btn btn-ghost" id="downloadBadge">DOWNLOAD BADGE</button>
   </div>`;
+}
+
+function downloadSeason(){
+  const g=game(),name=currentProfile().displayName;
+  const canvas=document.createElement("canvas");canvas.width=1600;canvas.height=1100;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#f7f6f1";ctx.fillRect(0,0,1600,1100);
+  ctx.fillStyle="#002b6a";ctx.fillRect(60,60,1480,980);
+  ctx.fillStyle="#ffffff";ctx.fillRect(90,90,1420,920);
+  ctx.textAlign="center";
+  ctx.fillStyle="#002b6a";ctx.font="700 38px Arial";ctx.fillText("TUBUO WRITES · WHAT WOULD YOU DO?",800,180);
+  ctx.fillStyle="#ffb800";ctx.font="700 110px Arial";ctx.fillText("★",800,330);
+  ctx.fillStyle="#002b6a";ctx.font="900 70px Arial";ctx.fillText("SEASON 1 COMPLETE",800,450);
+  ctx.fillStyle="#5a6673";ctx.font="34px Arial";ctx.fillText("AWARDED TO",800,540);
+  ctx.fillStyle="#007fe6";ctx.font="900 72px Arial";wrap(ctx,name,800,640,1200,78);
+  ctx.fillStyle="#11181f";ctx.font="38px Arial";ctx.fillText("Completed 200 decisions · "+g.label,800,780);
+  ctx.fillStyle="#5a6673";ctx.font="30px Arial";ctx.fillText("Awareness · Empathy · Safety · Rights · Evidence · Judgement · Courage",800,860);
+  ctx.font="28px Arial";ctx.fillText("Every choice changes the story.",800,940);
+  const a=document.createElement("a");a.download=("TUBUO-WWY-Season-1-"+g.label+"-"+name+".png").replace(/[^a-z0-9._-]+/gi,"-");a.href=canvas.toDataURL("image/png");a.click();
 }
 
 function downloadBadge(badge,stageId,pct){
