@@ -29,46 +29,46 @@ const PATHS={
 
 const SETTINGS={
  "adult-f":[
-  {name:"Amina",place:"Yaoundé, Cameroon",setting:"after a late day at work",channel:"a family WhatsApp group"},
-  {name:"Ada",place:"Lagos, Nigeria",setting:"during a weekend with old university friends",channel:"Instagram and private messages"},
-  {name:"Efua",place:"Accra, Ghana",setting:"while preparing for a community event",channel:"a neighbourhood WhatsApp group"},
-  {name:"Wanjiku",place:"Nairobi, Kenya",setting:"during her commute and workweek",channel:"phone location sharing"},
-  {name:"Naledi",place:"Johannesburg, South Africa",setting:"while balancing work and family responsibilities",channel:"private messages and calls"}
+  {name:"Amina",place:"Yaoundé, Cameroon",setting:"finishing a late day at work",channel:"a family WhatsApp group"},
+  {name:"Ada",place:"Lagos, Nigeria",setting:"spending a weekend with old university friends",channel:"Instagram and private messages"},
+  {name:"Efua",place:"Accra, Ghana",setting:"preparing for a community event",channel:"a neighbourhood WhatsApp group"},
+  {name:"Wanjiku",place:"Nairobi, Kenya",setting:"moving through her usual commute and workweek",channel:"phone location sharing"},
+  {name:"Naledi",place:"Johannesburg, South Africa",setting:"balancing work and family responsibilities",channel:"private messages and calls"}
  ],
  "adult-m":[
-  {name:"Daniel",place:"Douala, Cameroon",setting:"after work with friends",channel:"a football-group WhatsApp chat"},
-  {name:"Chinedu",place:"Abuja, Nigeria",setting:"during a family weekend",channel:"Instagram and direct messages"},
-  {name:"Kato",place:"Kampala, Uganda",setting:"after an evening with colleagues",channel:"a work chat and phone calls"},
-  {name:"Mwila",place:"Lusaka, Zambia",setting:"during a busy week at home",channel:"a friends’ group chat"},
-  {name:"Tawanda",place:"Harare, Zimbabwe",setting:"while planning a community event",channel:"WhatsApp and social media"}
+  {name:"Daniel",place:"Douala, Cameroon",setting:"spending time with friends after work",channel:"a football-group WhatsApp chat"},
+  {name:"Chinedu",place:"Abuja, Nigeria",setting:"spending a weekend with family",channel:"Instagram and direct messages"},
+  {name:"Kato",place:"Kampala, Uganda",setting:"heading home after an evening with colleagues",channel:"a work chat and phone calls"},
+  {name:"Mwila",place:"Lusaka, Zambia",setting:"managing a busy week at home",channel:"a friends’ group chat"},
+  {name:"Tawanda",place:"Harare, Zimbabwe",setting:"planning a community event",channel:"WhatsApp and social media"}
  ],
  "teen-f":[
-  {name:"Nayah",place:"Buea, Cameroon",setting:"between school, home and a youth group",channel:"WhatsApp"},
-  {name:"Abena",place:"Kumasi, Ghana",setting:"during exam season and after-school activities",channel:"Snapchat and class chat"},
-  {name:"Wanjiru",place:"Nairobi, Kenya",setting:"during school and the daily commute",channel:"Instagram and messaging"},
-  {name:"Selma",place:"Windhoek, Namibia",setting:"between school and sports practice",channel:"a class group chat"},
-  {name:"Awa",place:"Dakar, Senegal",setting:"during a school week and family activities",channel:"TikTok and private messages"}
+  {name:"Nayah",place:"Buea, Cameroon",setting:"moving between school, home and a youth group",channel:"WhatsApp"},
+  {name:"Abena",place:"Kumasi, Ghana",setting:"juggling exam season and after-school activities",channel:"Snapchat and class chat"},
+  {name:"Wanjiru",place:"Nairobi, Kenya",setting:"moving through school and the daily commute",channel:"Instagram and messaging"},
+  {name:"Selma",place:"Windhoek, Namibia",setting:"moving between school and sports practice",channel:"a class group chat"},
+  {name:"Awa",place:"Dakar, Senegal",setting:"juggling school and family activities",channel:"TikTok and private messages"}
  ],
  "teen-m":[
-  {name:"Kiven",place:"Bamenda, Cameroon",setting:"between school and football practice",channel:"a boys’ WhatsApp group"},
-  {name:"Tobi",place:"Lagos, Nigeria",setting:"during school and weekend hangouts",channel:"Instagram and class chat"},
-  {name:"Joel",place:"Kampala, Uganda",setting:"between school and gaming with friends",channel:"a gaming server and WhatsApp"},
-  {name:"Chanda",place:"Lusaka, Zambia",setting:"during sports practice and school",channel:"a team group chat"},
-  {name:"Youssef",place:"Casablanca, Morocco",setting:"between school, home and friends",channel:"private messages and social media"}
+  {name:"Kiven",place:"Bamenda, Cameroon",setting:"moving between school and football practice",channel:"a boys’ WhatsApp group"},
+  {name:"Tobi",place:"Lagos, Nigeria",setting:"moving between school and weekend hangouts",channel:"Instagram and class chat"},
+  {name:"Joel",place:"Kampala, Uganda",setting:"moving between school and gaming with friends",channel:"a gaming server and WhatsApp"},
+  {name:"Chanda",place:"Lusaka, Zambia",setting:"moving between sports practice and school",channel:"a team group chat"},
+  {name:"Youssef",place:"Casablanca, Morocco",setting:"moving between school, home and friends",channel:"private messages and social media"}
  ],
  "child-f":[
-  {name:"Mimi",place:"Yaoundé, Cameroon",setting:"between primary school and home",channel:"a family tablet"},
-  {name:"Ama",place:"Accra, Ghana",setting:"during school and playtime",channel:"a children’s game chat"},
-  {name:"Zuri",place:"Nairobi, Kenya",setting:"between school and an after-school club",channel:"a shared phone"},
-  {name:"Lena",place:"Windhoek, Namibia",setting:"during sports and family visits",channel:"a gaming app"},
-  {name:"Aïcha",place:"Dakar, Senegal",setting:"between home, school and cousins",channel:"a family device"}
+  {name:"Mimi",place:"Yaoundé, Cameroon",setting:"moving between primary school and home",channel:"a family tablet"},
+  {name:"Ama",place:"Accra, Ghana",setting:"moving between school and playtime",channel:"a children’s game chat"},
+  {name:"Zuri",place:"Nairobi, Kenya",setting:"moving between school and an after-school club",channel:"a shared phone"},
+  {name:"Lena",place:"Windhoek, Namibia",setting:"moving between sports and family visits",channel:"a gaming app"},
+  {name:"Aïcha",place:"Dakar, Senegal",setting:"moving between home, school and time with cousins",channel:"a family device"}
  ],
  "child-m":[
-  {name:"Kema",place:"Buea, Cameroon",setting:"between primary school and home",channel:"a family tablet"},
-  {name:"Sami",place:"Abuja, Nigeria",setting:"during school and playtime",channel:"a children’s game chat"},
-  {name:"Musa",place:"Kampala, Uganda",setting:"between school and an after-school club",channel:"a shared phone"},
-  {name:"Tino",place:"Harare, Zimbabwe",setting:"during sports and family visits",channel:"a gaming app"},
-  {name:"Adam",place:"Rabat, Morocco",setting:"between home, school and cousins",channel:"a family device"}
+  {name:"Kema",place:"Buea, Cameroon",setting:"moving between primary school and home",channel:"a family tablet"},
+  {name:"Sami",place:"Abuja, Nigeria",setting:"moving between school and playtime",channel:"a children’s game chat"},
+  {name:"Musa",place:"Kampala, Uganda",setting:"moving between school and an after-school club",channel:"a shared phone"},
+  {name:"Tino",place:"Harare, Zimbabwe",setting:"moving between sports and family visits",channel:"a gaming app"},
+  {name:"Adam",place:"Rabat, Morocco",setting:"moving between home, school and time with cousins",channel:"a family device"}
  ]
 };
 
