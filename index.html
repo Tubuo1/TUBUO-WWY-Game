@@ -2,17 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#002B6A">
-  <meta name="description" content="WHAT WOULD YOU DO? Every choice changes the story. A TUBUO Writes interactive GBV decision game.">
+  <meta name="description" content="WHAT WOULD YOU DO? Six age- and sex-responsive Season 1 games about gender-based violence, boundaries, respect, safety, evidence and responsible action. A TUBUO Writes original.">
+  <meta property="og:title" content="WHAT WOULD YOU DO? | TUBUO Writes">
+  <meta property="og:description" content="Every choice changes the story. Choose the game written for your age group and perspective.">
   <title>WHAT WOULD YOU DO? | TUBUO Writes</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#app">Skip to game</a>
   <main id="app" class="app" aria-live="polite"></main>
-  <noscript>This game requires JavaScript to track answers, calculate scores and unlock stages.</noscript>
-  <script src="questions.js"></script>
-  <script src="stage2.js"></script>
+  <noscript>
+    <div class="noscript">This game needs JavaScript to remember progress, score answers and unlock stages.</div>
+  </noscript>
+  <script src="game-data-v3.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
