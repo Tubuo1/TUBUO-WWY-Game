@@ -197,24 +197,24 @@ function rotateAnswers(correct,distractors,key){const all=[correct,...distractor
 function stageLead(level,stage){
  const adult=[
   "What is the most important thing to notice first?",
-  "The pressure is becoming clearer. What is the strongest next response?",
-  "Three days later, someone asks for help. What should guide the support?",
-  "New information is now being shared. What is the most responsible way to handle it?",
-  "The situation now involves safety, privacy, evidence and accountability. Which response brings the principles together?"
+  "What is the strongest next response?",
+  "What should guide the support now?",
+  "What should guide how the new information is handled?",
+  "Which response best brings safety, choice, evidence and accountability together?"
  ];
  const teen=[
   "What should stand out first?",
   "What is the strongest next choice?",
-  "A few days later, a friend asks for help. What should happen next?",
-  "New messages and rumours appear. What should guide the response?",
-  "The situation is now more complicated. Which choice best protects safety, respect and fairness?"
+  "What should guide the support now?",
+  "What should guide the response to the new information?",
+  "Which choice best protects safety, respect and fairness?"
  ];
  const child=[
   "What is the important thing to notice?",
   "What is the safest next choice?",
-  "A few days later, a friend needs help. What should happen?",
-  "There is new information. What should a child do?",
-  "This is a harder case. Which choice brings together safety, boundaries and getting help?"
+  "What should guide the help now?",
+  "What should guide the decision when there is new information?",
+  "Which choice best brings together safety, boundaries and getting help?"
  ];
  return (level==="adult"?adult:level==="teen"?teen:child)[stage-1];
 }
