@@ -336,7 +336,7 @@ function showQuestion(stageId,index){
       <div class="stat"><b>${streak}</b><span>Current streak</span></div>
       <div class="stat"><b>${esc(q.skill)}</b><span>Skill</span></div>
     </div>
-    <div class="progress-wrap"><div class="progress-meta"><span>${esc(s.title)}</span><span>${pct}%</span></div><div class="progress"><span style="width:${pct}%"></span></div></div>
+    <div class="progress-wrap"><div class="progress-meta"><span>${esc(s.title)}</span><span>${pct}%</span></div><div class="progress"><span style="width:${pct}%"></span></div></div>${checkpointText(s,index)}${streakMessage(streak)?`<div class="streak-banner">${esc(streakMessage(streak))}</div>`:""}
     <section class="card question-card">
       <div class="format">${esc(q.format)}${q.boss?" · STAGE BOSS":""}</div>
       <h2>Decision ${index+1}</h2>
@@ -349,6 +349,7 @@ function showQuestion(stageId,index){
     </section>
   </div>`,`<button class="mini-btn" id="switchBtn">${esc(g.label)}</button>`);
   document.getElementById("stageMap").onclick=home;
+  document.querySelectorAll('input[name="answer"]').forEach(radio=>radio.addEventListener("change",()=>{playCue("select");haptic("tap");const label=radio.nextElementSibling;if(label){label.classList.remove("answer-pulse");void label.offsetWidth;label.classList.add("answer-pulse")}}));
   const readBtn=document.getElementById("readBtn");if(readBtn)readBtn.onclick=()=>speak(q.scenario);
   const sw=document.getElementById("switchBtn");if(sw)sw.onclick=chooseAge;
   document.getElementById("checkBtn").onclick=()=>{
@@ -357,14 +358,15 @@ function showQuestion(stageId,index){
     const choice=Number(chosen.value),correct=choice===q.correct;
     p.answers[q.id]={choice,correct,answeredAt:new Date().toISOString()};
     const newStreak=correct?streak+1:0;p.bestStreak=Math.max(p.bestStreak,newStreak);
+    playCue(correct?"strong":"learn");haptic(correct?"strong":"learn");
     save();showQuestion(stageId,index);
   };
-  const next=document.getElementById("nextBtn");if(next)next.onclick=()=>showQuestion(stageId,index+1);
+  const next=document.getElementById("nextBtn");if(next)next.onclick=()=>{playCue("next");haptic("tap");showQuestion(stageId,index+1)};
 }
 
 function renderFeedback(q,r){
   return `<div class="feedback ${r.correct?"correct":"learn"}">
-    <div class="feedback-title">${r.correct?"✓ STRONG CHOICE":"↻ NOT THE STRONGEST CHOICE YET"}</div>
+    <div class="feedback-title">${r.correct?"✓ STRONG CHOICE":"↻ LEARNING MOMENT"}</div>
     <div class="feedback-grid">
       <div><span>YOUR CHOICE</span><p>${esc(q.answers[r.choice])}</p></div>
       <div><span>WHAT HAPPENS</span><p>${esc(q.consequence)}</p></div>
@@ -386,7 +388,7 @@ function results(s){
   }
   save();
   const skills=skillSummary(),strengths=skills.slice(0,3),growth=skills.slice().sort((a,b)=>a.pct-b.pct).slice(0,2);
-  shell(`<section class="card result-card">
+  shell(`<section class="card result-card ${passed?"stage-success":"stage-retry"}">
     <div class="eyebrow">STAGE ${s.id} COMPLETE</div>
     <div class="score-ring" style="--score:${pct}%"><b>${pct}%</b><span>${right}/${total}</span></div>
     <h1 class="result-title">${passed?"STAGE PASSED":"NOT QUITE YET"}</h1>
@@ -405,10 +407,13 @@ function results(s){
       ${passed&&s.id===5?`<button class="btn btn-ghost" id="exploreBtn">EXPLORE ANOTHER PERSPECTIVE</button>`:""}
     </div>
   </section>`);
-  document.getElementById("menuBtn").onclick=home;
-  const c=document.getElementById("continueBtn");if(c)c.onclick=()=>{p.stage=s.id+1;p.index=0;save();showQuestion(p.stage,0)};
-  const r=document.getElementById("retryBtn");if(r)r.onclick=()=>{s.questions.forEach(q=>delete p.answers[q.id]);delete p.completed[s.id];p.index=0;save();showQuestion(s.id,0)};
-  const d=document.getElementById("downloadBadge");if(d)d.onclick=()=>downloadBadge(g.badges[s.id-1],s.id,pct);
+  if(passed){
+    playCue(s.id===5?"season":"pass");haptic(s.id===5?"season":"pass");celebrate(s.id===5?"season":"badge");
+  }else{playCue("retry");haptic("learn")}
+  document.getElementById("menuBtn").onclick=()=>{playCue("select");home()};
+  const c=document.getElementById("continueBtn");if(c)c.onclick=()=>{playCue("next");p.stage=s.id+1;p.index=0;save();showQuestion(p.stage,0)};
+  const r=document.getElementById("retryBtn");if(r)r.onclick=()=>{playCue("retry");s.questions.forEach(q=>delete p.answers[q.id]);delete p.completed[s.id];p.index=0;save();showQuestion(s.id,0)};
+  const d=document.getElementById("downloadBadge");if(d)d.onclick=()=>{playCue("badge");celebrate("badge");downloadBadge(g.badges[s.id-1],s.id,pct)};
   const season=document.getElementById("downloadSeason");if(season)season.onclick=()=>downloadSeason();
   const explore=document.getElementById("exploreBtn");if(explore)explore.onclick=chooseAge;
 }
