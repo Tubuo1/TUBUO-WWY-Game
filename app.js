@@ -8,17 +8,20 @@ const KEY="tubuo_wwyd_v3";
 const LEGACY_KEY="tubuo_wwyd_v2";
 
 const freshPath=()=>({unlocked:1,stage:1,index:0,answers:{},completed:{},badges:{},bestStreak:0});
-const fresh=()=>({selectedPath:null,profile:null,pathStates:{},settings:{reducedMotion:false}});
+const fresh=()=>({selectedPath:null,profiles:{},pathStates:{},settings:{reducedMotion:false}});
 
 function load(){
   try{
     const parsed=JSON.parse(localStorage.getItem(KEY)||"{}");
     const s=Object.assign(fresh(),parsed);
-    if(!s.profile){
-      const legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||"{}");
-      if(legacy&&legacy.profile&&legacy.profile.first){
-        s.profile={displayName:legacy.profile.first,email:legacy.profile.email||"",emailConsent:!!legacy.profile.emailConsent};
-      }
+    if(!s.profiles)s.profiles={};
+    if(parsed.profile&&parsed.profile.displayName){
+      s.profiles[parsed.selectedPath||"adult-f"]=parsed.profile;
+      delete s.profile;
+    }
+    const legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||"{}");
+    if(!s.profiles["adult-f"]&&legacy&&legacy.profile&&legacy.profile.first){
+      s.profiles["adult-f"]={displayName:legacy.profile.first,email:legacy.profile.email||"",emailConsent:!!legacy.profile.emailConsent};
     }
     return s;
   }catch(e){return fresh()}
@@ -26,7 +29,7 @@ function load(){
 let state=load();
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
-function ps(id=state.selectedPath){if(!id)return null;if(!state.pathStates[id])state.pathStates[id]=freshPath();return state.pathStates[id]}
+function ps(id=state.selectedPath){if(!id)return null;if(!state.pathStates[id])state.pathStates[id]=freshPath();return state.pathStates[id]}\nfunction currentProfile(id=state.selectedPath){return id&&state.profiles?state.profiles[id]||null:null}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function game(){return state.selectedPath?DATA.GAMES[state.selectedPath]:null}
 function stage(n){const g=game();return g?g.stages.find(s=>s.id===n):null}
@@ -120,7 +123,7 @@ function chooseSex(age){
 
 function selectPath(id){
   state.selectedPath=id;ps(id);save();
-  if(!state.profile) profile(); else home();
+  if(!currentProfile()) profile(); else home();
 }
 
 function profile(){
@@ -146,7 +149,7 @@ function profile(){
       consent=document.getElementById("emailConsent").checked;
       if(email&&!consent){alert("Tick the consent box if you want to save an email, or leave the email field blank.");return}
     }
-    state.profile={displayName:name,email:email||"",emailConsent:!!(email&&consent)};
+    state.profiles[state.selectedPath]={displayName:name,email:email||"",emailConsent:!!(email&&consent)};
     save();home();
   };
 }
@@ -154,9 +157,9 @@ function profile(){
 function home(){
   const g=game(),p=ps();
   if(!g){welcome();return}
-  if(!state.profile){profile();return}
+  if(!currentProfile()){profile();return}
   const current=stage(p.stage)||g.stages[0];
-  const name=esc(state.profile.displayName);
+  const name=esc(currentProfile().displayName);
   shell(`<section class="hero path-hero level-${g.level}">
     <div class="eyebrow">${esc(g.label)} · SEASON 1</div>
     <h1 class="path-title">${esc(g.entryTitle)}</h1>
@@ -260,7 +263,7 @@ function results(s){
   const skills=skillSummary(),strengths=skills.slice(0,3),growth=skills.slice().sort((a,b)=>a.pct-b.pct).slice(0,2);
   shell(`<section class="card result-card">
     <div class="eyebrow">STAGE ${s.id} COMPLETE</div>
-    <div class="score-ring"><b>${pct}%</b><span>${right}/${total}</span></div>
+    <div class="score-ring" style="--score:${pct}%"><b>${pct}%</b><span>${right}/${total}</span></div>
     <h1 class="result-title">${passed?"STAGE PASSED":"NOT QUITE YET"}</h1>
     <p>${passed?"You reached the 70% mark. The next stage is ready.":"You need "+s.pass+" strong choices out of "+total+" to pass. Review what the decisions taught and try again — there is no penalty."}</p>
     ${passed?badgeCard(s.id,pct):""}
@@ -268,7 +271,7 @@ function results(s){
       <div><b>Strong areas</b><p>${strengths.length?strengths.map(x=>esc(x.name)+" "+x.pct+"%").join(" · "):"Keep playing"}</p></div>
       <div><b>Worth another look</b><p>${growth.length?growth.map(x=>esc(x.name)+" "+x.pct+"%").join(" · "):"Keep playing"}</p></div>
     </div>
-    ${passed&&s.id===5?`<div class="season-complete"><div class="trophy">🏆</div><b>SEASON 1 COMPLETE</b><p>${esc(state.profile.displayName)}, you completed all 200 decisions in ${esc(g.label)}.</p></div>`:""}
+    ${passed&&s.id===5?`<div class="season-complete"><div class="trophy">🏆</div><b>SEASON 1 COMPLETE</b><p>${esc(currentProfile().displayName)}, you completed all 200 decisions in ${esc(g.label)}.</p></div>`:""}
     <div class="actions center">
       ${passed&&s.id<5?`<button class="btn btn-primary" id="continueBtn">OPEN STAGE ${s.id+1} →</button>`:""}
       ${!passed?`<button class="btn btn-primary" id="retryBtn">TRY STAGE AGAIN</button>`:""}
@@ -282,7 +285,7 @@ function results(s){
 }
 
 function badgeCard(id,pct){
-  const g=game(),name=esc(state.profile.displayName),badge=esc(g.badges[id-1]);
+  const g=game(),name=esc(currentProfile().displayName),badge=esc(g.badges[id-1]);
   return `<div class="badge-card">
     <div class="badge-medal">🏅</div><div class="eyebrow">TUBUO WRITES · WHAT WOULD YOU DO?</div>
     <h2>${badge}</h2><p>Awarded to</p><h3>${name}</h3>
