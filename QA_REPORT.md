@@ -79,3 +79,23 @@ Current automated checks confirm:
 A separate near-duplicate review using word-set similarity found **no question pair above the 0.80 similarity threshold within any path** after the rebuild.
 
 The public build should fail QA rather than ship if an exact duplicate scenario, story signature, answer set or question ID is introduced.
+
+
+## Engagement release — v3.4
+
+The game now includes an optional engagement layer designed around safeguarding rather than speed or spectacle.
+
+Checks and design rules:
+
+- sound is generated locally through Web Audio and can be muted at any time;
+- no background music plays by default;
+- no violent sound effects or harsh wrong-answer buzzers are used;
+- a wrong answer triggers a neutral learning cue rather than a punishment cue;
+- motion can be disabled independently of sound;
+- the game honors the browser's reduced-motion preference on first use;
+- optional haptic taps are used only where the device supports them;
+- children, teens and adults use different motion intensity and different tonal profiles;
+- quarter, halfway and three-quarter checkpoints provide age-appropriate encouragement;
+- streak messages reward thoughtful consistency and do not score speed;
+- stage pass, badge and Season 1 completion use short celebrations that do not block the next action;
+- the game remains fully playable with sound, motion and haptics off.
