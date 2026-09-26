@@ -29,7 +29,8 @@ function load(){
 let state=load();
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
-function ps(id=state.selectedPath){if(!id)return null;if(!state.pathStates[id])state.pathStates[id]=freshPath();return state.pathStates[id]}\nfunction currentProfile(id=state.selectedPath){return id&&state.profiles?state.profiles[id]||null:null}
+function ps(id=state.selectedPath){if(!id)return null;if(!state.pathStates[id])state.pathStates[id]=freshPath();return state.pathStates[id]}
+function currentProfile(id=state.selectedPath){return id&&state.profiles?state.profiles[id]||null:null}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function game(){return state.selectedPath?DATA.GAMES[state.selectedPath]:null}
 function stage(n){const g=game();return g?g.stages.find(s=>s.id===n):null}
@@ -296,7 +297,7 @@ function badgeCard(id,pct){
 }
 
 function downloadBadge(badge,stageId,pct){
-  const g=game(),name=state.profile.displayName;
+  const g=game(),name=currentProfile().displayName;
   const canvas=document.createElement("canvas");canvas.width=1200;canvas.height=1200;
   const ctx=canvas.getContext("2d");
   ctx.fillStyle="#f7f6f1";ctx.fillRect(0,0,1200,1200);
