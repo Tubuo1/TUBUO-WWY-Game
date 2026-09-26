@@ -656,16 +656,42 @@ const SCENE_CUES={
  }
 };
 
+const VARIANT_BEATS={
+ adult:[
+  "{name} is {setting}, so the decision has to fit ordinary life rather than a perfect textbook situation.",
+  "A similar concern was brushed aside once before, so this time {name} is paying attention to the pattern.",
+  "Money, transport, housing or work makes the situation harder to solve with one dramatic move.",
+  "Another person witnessed only part of what happened, which means support and fact-finding have to stay separate.",
+  "A boundary has already been stated once, so the next response has to consider what happened after that boundary was ignored."
+ ],
+ teen:[
+  "{name} still has to go back to school and face the same people, so the response has to work beyond the next five minutes.",
+  "The issue is already affecting a group chat, where friends are reacting faster than they are checking facts.",
+  "A trusted adult could help, but {name} worries that asking for help will lead to judgement or loss of privacy.",
+  "Friends are watching closely, and fitting in is beginning to compete with doing what is safe and respectful.",
+  "The situation has moved between online and offline life, so deleting one message will not automatically make the problem disappear."
+ ],
+ child:[
+  "{name} is {setting}, and the safest choice should be simple enough for a child to use in real life.",
+  "A friend is now involved too, but children still should not have to investigate or solve the bigger problem themselves.",
+  "One grown-up did not listen carefully the first time, so {name} may need to tell another safe adult.",
+  "Part of the situation happens online and part happens in everyday life, which is why a safe adult needs to know.",
+  "This is not the first uncomfortable moment, so {name} can trust the feeling that something is wrong and ask for help again."
+ ]
+};
+
 function cueFor(p,t,s,variant){
  const list=SCENE_CUES[p.level][t.id];
  const template=list&&list.length?list[variant%list.length]:t.scene;
  const filled=fill(template,s);
+ const beat=fill(VARIANT_BEATS[p.level][Math.floor(variant/4)%VARIANT_BEATS[p.level].length],s);
  const mentionsName=template.includes("{name}");
  const mentionsPlace=template.includes("{place}");
- if(mentionsName&&mentionsPlace)return filled;
- if(mentionsName)return filled+" This happens in "+s.place+".";
- if(mentionsPlace)return s.name+" is the person deciding what to do next. "+filled;
- return s.name+" is dealing with this in "+s.place+": "+filled;
+ let anchored=filled;
+ if(!mentionsName&&!mentionsPlace)anchored=s.name+" is dealing with this in "+s.place+": "+filled;
+ else if(!mentionsName)anchored=s.name+" is the person deciding what to do next. "+filled;
+ else if(!mentionsPlace)anchored=filled+" This happens in "+s.place+".";
+ return anchored+" "+beat;
 }
 
 const MOMENTS={
@@ -853,15 +879,14 @@ function consequenceFor(t,stage,level){
 function buildPath(pathId){
  const p=PATHS[pathId],themes=THEMES[pathId],settings=SETTINGS[pathId];
  let arcs=[];
- const variants=8;
- for(const s of settings){
-  for(const t of themes){
-   for(let variant=0;variant<variants;variant++){
-    arcs.push({t,s,variant,storyId:pathId+"-"+t.id+"-"+s.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-v"+variant});
-   }
+ const variants=20;
+ themes.forEach((t,themeIndex)=>{
+  for(let variant=0;variant<variants;variant++){
+   const s=settings[(variant+themeIndex*2)%settings.length];
+   arcs.push({t,s,variant,storyId:pathId+"-"+t.id+"-v"+variant+"-"+s.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")});
   }
- }
- arcs=shuffled(arcs,hash(pathId+"-season1-unique"));
+ });
+ arcs=shuffled(arcs,hash(pathId+"-season1-zero-repeat"));
  let cursor=0;
  const stages=COUNTS.map((count,i)=>{
    const stage=i+1;
