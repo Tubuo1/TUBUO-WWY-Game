@@ -91,7 +91,7 @@ function bindTop(){
   const t=document.getElementById("textSizeBtn"); if(t)t.onclick=cycleTextScale;
 }
 function applyGameTheme(){
-  const id=state.selectedPath||"neutral";
+  const id=document.documentElement.dataset.forceNeutral==="1"?"neutral":(state.selectedPath||"neutral");
   document.documentElement.dataset.game=id;
   const meta=document.querySelector('meta[name="theme-color"]');
   if(meta){
@@ -121,7 +121,7 @@ function welcome(){
 }
 
 function chooseAge(){
-  document.documentElement.dataset.game="neutral";
+  document.documentElement.dataset.forceNeutral="1";
   shell(`<section class="card intro-card">
     <div class="eyebrow">STEP 1 OF 2</div>
     <h2>Which age group should this game be written for?</h2>
@@ -157,6 +157,7 @@ function chooseSex(age){
 }
 
 function selectPath(id){
+  delete document.documentElement.dataset.forceNeutral;
   state.selectedPath=id;ps(id);save();
   if(!currentProfile()) profile(); else home();
 }
