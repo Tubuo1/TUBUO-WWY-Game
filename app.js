@@ -245,11 +245,12 @@ function showQuestion(stageId,index){
       <form id="answers" class="answers">
         ${q.answers.map((a,i)=>`<div class="answer"><input type="radio" name="answer" id="a${i}" value="${i}" ${record?.choice===i?"checked":""} ${record?"disabled":""}><label for="a${i}"><span class="answer-letter">${String.fromCharCode(65+i)}</span><span>${esc(a)}</span></label></div>`).join("")}
       </form>
-      <div class="actions"><button class="btn btn-primary" id="checkBtn" ${record?"disabled":""}>MAKE THIS CHOICE</button></div>
+      <div class="actions"><button class="btn btn-ghost" id="readBtn" type="button">🔊 READ SCENARIO</button><button class="btn btn-primary" id="checkBtn" ${record?"disabled":""}>MAKE THIS CHOICE</button></div>
       <div id="feedback">${feedbackBlock}</div>
     </section>
   </div>`,`<button class="mini-btn" id="switchBtn">${esc(g.label)}</button>`);
   document.getElementById("stageMap").onclick=home;
+  const readBtn=document.getElementById("readBtn");if(readBtn)readBtn.onclick=()=>speak(q.scenario);
   const sw=document.getElementById("switchBtn");if(sw)sw.onclick=chooseAge;
   document.getElementById("checkBtn").onclick=()=>{
     const chosen=document.querySelector('input[name="answer"]:checked');
@@ -292,6 +293,7 @@ function results(s){
     <h1 class="result-title">${passed?"STAGE PASSED":"NOT QUITE YET"}</h1>
     <p>${passed?"You reached the 70% mark. The next stage is ready.":"You need "+s.pass+" strong choices out of "+total+" to pass. Review what the decisions taught and try again — there is no penalty."}</p>
     ${passed?badgeCard(s.id,pct):""}
+    <div class="decision-profile-block"><div class="eyebrow">YOUR DECISION PROFILE SO FAR</div>${skillBars(skills)}</div>
     <div class="result-insights">
       <div><b>Strong areas</b><p>${strengths.length?strengths.map(x=>esc(x.name)+" "+x.pct+"%").join(" · "):"Keep playing"}</p></div>
       <div><b>Worth another look</b><p>${growth.length?growth.map(x=>esc(x.name)+" "+x.pct+"%").join(" · "):"Keep playing"}</p></div>
@@ -301,6 +303,7 @@ function results(s){
       ${passed&&s.id<5?`<button class="btn btn-primary" id="continueBtn">OPEN STAGE ${s.id+1} →</button>`:""}
       ${!passed?`<button class="btn btn-primary" id="retryBtn">TRY STAGE AGAIN</button>`:""}
       <button class="btn btn-ghost" id="menuBtn">STAGE MAP</button>
+      ${passed&&s.id===5?`<button class="btn btn-ghost" id="exploreBtn">EXPLORE ANOTHER PERSPECTIVE</button>`:""}
     </div>
   </section>`);
   document.getElementById("menuBtn").onclick=home;
@@ -308,6 +311,7 @@ function results(s){
   const r=document.getElementById("retryBtn");if(r)r.onclick=()=>{s.questions.forEach(q=>delete p.answers[q.id]);delete p.completed[s.id];p.index=0;save();showQuestion(s.id,0)};
   const d=document.getElementById("downloadBadge");if(d)d.onclick=()=>downloadBadge(g.badges[s.id-1],s.id,pct);
   const season=document.getElementById("downloadSeason");if(season)season.onclick=()=>downloadSeason();
+  const explore=document.getElementById("exploreBtn");if(explore)explore.onclick=chooseAge;
 }
 
 function badgeCard(id,pct){
@@ -363,6 +367,28 @@ function wrap(ctx,text,x,y,max,line){
   if(row)ctx.fillText(row,x,yy);
 }
 
+function glossary(){
+  const g=game(),child=g&&g.level==="child";
+  const terms=child?[
+    ["Boundary","A limit that helps keep your body, space or information safe."],
+    ["Consent","Agreeing freely. Children also have a right to protection, and adults have special duties to keep them safe."],
+    ["Safe adult","An adult you trust who listens, helps and does not ask you to keep unsafe secrets."],
+    ["Unsafe secret","A secret that makes you scared, trapped or worried, or hides harm."],
+    ["Pressure","When someone keeps pushing, threatening, bribing or making you feel you cannot say no."],
+    ["Evidence","Information that can help adults understand what happened, such as a message or what someone saw."]
+  ]:[
+    ["Consent","A freely given, current and specific agreement. Past consent or relationship status does not create automatic future consent."],
+    ["Coercion","Pressure, threats, manipulation or abuse of power that makes a person’s choice less free."],
+    ["Coercive control","A repeated pattern used to dominate another person through monitoring, isolation, intimidation, money, threats or other controls."],
+    ["GBV","Gender-based violence: harmful acts directed at someone because of gender, or violence that affects a gender disproportionately."],
+    ["Bystander","Someone who witnesses or becomes aware of harmful behaviour and has choices about whether and how to respond."],
+    ["Safeguarding","Steps taken to protect children and other people at risk from harm and to respond safely when concerns arise."],
+    ["Evidence","Information used to assess what happened. Evidence can support, contradict or leave uncertainty; it should not be stretched beyond what it shows."],
+    ["Survivor-centred support","Support that prioritizes dignity, safety, privacy and the affected person’s choices rather than taking over."]
+  ];
+  shell(`<section class="card method-card"><div class="eyebrow">PLAIN-LANGUAGE GLOSSARY</div><h1 class="page-title">Words the game uses</h1><p>These definitions are written for learning, not as legal definitions for every country.</p><div class="glossary-list">${terms.map(([a,b])=>`<div class="glossary-item"><b>${esc(a)}</b><p>${esc(b)}</p></div>`).join("")}</div><button class="btn btn-primary" id="glossaryReturn">RETURN</button></section>`);
+  document.getElementById("glossaryReturn").onclick=()=>state.selectedPath?home():welcome();
+}
 function help(){
   const g=game(),minor=g&&g.level!=="adult";
   shell(`<section class="card help-card">
@@ -387,9 +413,10 @@ function methodology(){
     <h2>Evidence base</h2>
     <div class="source-list">${Object.values(DATA.SOURCES).map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener"><b>${esc(s.name)}</b><span>Open source ↗</span></a>`).join("")}</div>
     <div class="callout"><b>Editorial rule</b><p>The game distinguishes allegations from established facts, avoids survivor blame, does not assume police are safe everywhere, and does not treat one country’s law as universal.</p></div>
-    <button class="btn btn-primary" id="methodReturn">RETURN</button>
+    <h2>Accessibility and privacy</h2><p>Use the A/A+/A++ control to enlarge text. Scenario pages also include read-aloud where the browser supports it. Progress stays in this browser unless you clear it.</p><div class="actions"><button class="btn btn-primary" id="methodReturn">RETURN</button><button class="btn btn-ghost" id="clearAllBtn">CLEAR ALL GAME DATA ON THIS DEVICE</button></div>
   </section>`);
   document.getElementById("methodReturn").onclick=()=>state.selectedPath?home():welcome();
+  const clear=document.getElementById("clearAllBtn");if(clear)clear.onclick=()=>{if(confirm("Clear all six game paths, badge names and progress from this browser? This cannot be undone.")){localStorage.removeItem(KEY);state=fresh();state.settings={textScale:0};save();welcome()}};
 }
 
 if(state.selectedPath&&currentProfile())home();else welcome();
