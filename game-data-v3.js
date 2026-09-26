@@ -329,6 +329,339 @@ function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCod
 function shuffled(arr,seed){const a=arr.slice();let s=seed>>>0;for(let i=a.length-1;i>0;i--){s=(Math.imul(s,1664525)+1013904223)>>>0;const j=s%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
 function rotateAnswers(correct,distractors,key){const wrong=shuffled(distractors,hash(key+"-wrong")).slice(0,3);const all=[correct,...wrong];const r=hash(key)%4;const answers=all.slice(r).concat(all.slice(0,r));return{answers,correct:answers.indexOf(correct)}}
 
+const SCENE_CUES={
+ adult:{
+  control:[
+   "{name}'s partner starts asking for a photo every time she arrives somewhere, then questions the background if anything looks unfamiliar.",
+   "At dinner in {place}, {name}'s phone buzzes again. Her partner wants to know who liked her post and why she has not replied to him yet.",
+   "{name} notices that plans with friends keep turning into arguments because her partner insists on approving where she goes and who is there.",
+   "After {name} changes her phone passcode, her partner says couples should have 'nothing to hide' and demands the new code."
+  ],
+  consent:[
+   "After a good evening together in {place}, {name}'s partner wants sex. One person changes their mind, and the other keeps trying to persuade them.",
+   "A couple in {place} have been intimate before. Tonight one partner says, 'Not tonight,' and the other says past agreement should still count.",
+   "{name} hears a friend say that once two people are married, refusing sex is unfair to the other spouse.",
+   "During an intimate moment, one person becomes uncomfortable and asks to stop. Their partner says, 'But we already started.'"
+  ],
+  economic:[
+   "{name} learns that a woman in {place} has to ask her partner for bus fare even though her salary is paid into an account he controls.",
+   "A partner cancels {name}'s bank card after an argument and says she can get access again when she 'learns to listen.'",
+   "{name}'s friend is offered a job, but her partner threatens to stop paying household bills if she accepts it.",
+   "At home in {place}, every small purchase must be explained, while one partner freely uses the family money without discussion."
+  ],
+  digital:[
+   "An ex sends {name} a message saying he still has private photos and will post them if she blocks him.",
+   "{name} receives a fake account request using her photo and realizes someone is impersonating her to contact people she knows.",
+   "A former partner keeps resetting {name}'s passwords because he still has access to an old email account.",
+   "A message arrives through {channel}: pay money or a private image will be sent to family members."
+  ],
+  stalking:[
+   "{name} notices the same car near her workplace three evenings in a row after she ended a relationship.",
+   "After blocking an ex, {name} begins receiving messages from new numbers that mention places she visited that day.",
+   "Friends tell {name} that her former partner has been asking them for her schedule and new address.",
+   "A delivery arrives that {name} did not order, with a note from an ex who was never given her current location."
+  ],
+  work:[
+   "A manager in {place} keeps inviting {name} to private dinners and hints that being 'friendly' could help with the next promotion.",
+   "{name}'s supervisor starts commenting on her body during shifts and laughs when she asks him to stop.",
+   "After {name} refuses a date with a senior colleague, her preferred shifts suddenly disappear from the schedule.",
+   "A supervisor sends late-night messages to {name} that mix work instructions with sexual comments."
+  ],
+  family:[
+   "At a family meeting in {place}, relatives tell {name} she should return to a husband she fears because too much money was spent on the marriage.",
+   "An aunt tells {name} that speaking publicly about violence would embarrass the whole family more than the violence itself.",
+   "Relatives insist that a marriage payment means a wife should obey her husband even when she feels unsafe.",
+   "A family elder says the couple's problems should stay private and asks everyone to stop helping {name} leave for a few nights."
+  ],
+  support:[
+   "A friend tells {name}, 'I'm scared of going home tonight,' then immediately says she does not want anyone making decisions for her.",
+   "{name}'s friend reveals that her partner has been frightening her, then asks, 'Can you just listen first?'",
+   "A woman tells {name} about repeated threats but says she is not ready to report them and worries friends will judge her.",
+   "A friend asks {name} for a place to sit quietly after an argument at home and says she needs time before deciding what to do."
+  ],
+  evidence:[
+   "A cropped screenshot in {channel} names someone in {place} and accuses him of sexual violence, but nobody can find the original post.",
+   "A short video clip is spreading online with a serious accusation, but it begins after the argument has already started.",
+   "{name} receives two voice notes describing the same incident differently, and both senders insist their version is complete.",
+   "A post gives a person's full name and workplace before any verified report can be found."
+  ],
+  disability:[
+   "{name} meets a woman whose caregiver keeps her wheelchair charger locked away after arguments.",
+   "A woman in {place} says the person who assists her with daily tasks also reads her messages and decides who may visit.",
+   "{name} hears that a caregiver threatens to withhold medication unless a woman follows his personal rules.",
+   "A woman who needs communication support says people keep speaking to her caregiver instead of asking her what she wants."
+  ],
+  migration:[
+   "A worker tells {name} her supervisor keeps her passport 'for safekeeping' and threatens to cancel shifts if she refuses his advances.",
+   "In {place}, a newcomer says someone is using her uncertain immigration status to pressure her into a relationship.",
+   "{name} hears that an employer threatened to report a worker to immigration after she complained about sexual comments.",
+   "A woman says she wants help but fears losing housing tied to the same employer who has been harassing her."
+  ],
+  bystander:[
+   "On a crowded bus in {place}, {name} sees a passenger keep touching a woman who has already moved away twice.",
+   "At a community event, {name} notices a man blocking a woman's path while she repeatedly says she wants to leave.",
+   "In a queue, {name} hears sexual comments directed at a woman who is trying to ignore them and move away.",
+   "At a party, {name} sees a friend becoming uncomfortable while someone keeps pulling her back into a conversation."
+  ],
+  jealousy:[
+   "{name} feels jealous after seeing his partner laugh at a message and asks to inspect her phone to prove nothing is happening.",
+   "In {place}, {name} starts checking when his partner was last online and questions every gap in her replies.",
+   "Friends tell {name} that a serious boyfriend should know his partner's passwords and location at all times.",
+   "{name} considers asking his partner to stop seeing a male friend because the friendship makes him insecure."
+  ],
+  peers:[
+   "In {channel}, {name}'s friends start ranking women they know and mocking anyone who refuses to join in.",
+   "A group of men share a woman's private photo and tell {name} not to be 'boring' when he objects.",
+   "Friends laugh about getting women drunk enough to 'stop saying no' and wait to see whether {name} laughs too.",
+   "A football-group chat turns a woman's rejection of one member into jokes and insults aimed at her."
+  ],
+  "friend-abuse":[
+   "A close friend tells {name} he hid his girlfriend's keys during an argument so she could not leave.",
+   "{name}'s friend boasts that he checks his partner's phone while she sleeps because 'trust has to be verified.'",
+   "A friend asks {name} to lie about where he was after an argument in which his girlfriend says she felt threatened.",
+   "A male friend says he decides which friends his girlfriend can keep because some of them 'put ideas in her head.'"
+  ],
+  images:[
+   "{name} receives a private intimate image in a group chat and realizes the woman pictured never agreed for the group to see it.",
+   "A friend offers to AirDrop {name} a sexual image of a classmate's older sister and says 'everyone already has it.'",
+   "{name} sees an intimate video being replayed at a party while people argue that it is public now anyway.",
+   "Someone asks {name} to save a private image before it gets deleted so the group can keep sharing it."
+  ],
+  anger:[
+   "During an argument, {name} slams a chair into the wall and then says it does not count because he never touched his partner.",
+   "{name} blocks a doorway while arguing and tells himself he is only trying to finish the conversation.",
+   "After getting angry, {name} throws a phone across the room and says his partner is overreacting for feeling afraid.",
+   "In {place}, {name} notices that his arguments increasingly include shouting inches from his partner's face."
+  ],
+  fatherhood:[
+   "{name}'s child starts turning up the television whenever adults begin shouting at home.",
+   "A child asks {name} whether it is their fault that adults keep fighting.",
+   "{name} realizes his child has begun hiding toys and younger siblings when arguments start.",
+   "After another loud argument, {name}'s child says they do not want friends visiting the house anymore."
+  ],
+  "male-survivor":[
+   "A male friend tells {name} an older partner forced sexual activity and says he is afraid other men will laugh at him.",
+   "{name}'s friend says he froze during unwanted sexual contact and now worries that means he agreed.",
+   "A man tells {name} his partner threatens to expose private details whenever he tries to leave the relationship.",
+   "A friend admits he is scared of his partner's violence but says nobody will believe a man asking for help."
+  ],
+  disclosure:[
+   "{name}'s sister says her partner frightens her and asks him not to go to the man's house looking for a fight.",
+   "A cousin tells {name} about threats at home but asks him to keep the conversation private while she thinks.",
+   "A friend tells {name} she may need somewhere safe tonight but does not want him confronting her partner.",
+   "{name} hears a disclosure of abuse and immediately feels angry enough to want to take matters into his own hands."
+  ],
+  culture:[
+   "At a family gathering, older men tell {name} that bride-price gives a husband the final say over his wife's movements.",
+   "Someone tells {name} that a wife who leaves an abusive marriage shames both families because marriage payments were exchanged.",
+   "A relative says 'discipline' inside marriage is a private cultural matter outsiders should not question.",
+   "During a discussion in {place}, {name} hears tradition used as the reason a woman should tolerate threats from her husband."
+  ]
+ },
+ teen:{
+  "dating-control":[
+   "{name}'s boyfriend asks for her phone password and says refusing proves she has something to hide.",
+   "Someone {name} is dating gets angry whenever she spends lunch with friends without checking in first.",
+   "A partner asks {name} to keep location sharing on all day so he can see where she is after school.",
+   "{name} notices that every disagreement now ends with demands to unfollow another friend."
+  ],
+  consent:[
+   "After kissing, one teen says they do not want to go further. The other says stopping now is unfair.",
+   "Someone {name} is dating says, 'If you really loved me, you would be ready by now.'",
+   "A friend tells {name} that agreeing to a date means agreeing to physical affection at the end.",
+   "During a private moment, one teen changes their mind and asks to stop."
+  ],
+  images:[
+   "A classmate threatens to share a private image of {name} unless she sends another one.",
+   "A private picture begins circulating in {channel}, and people tell {name} everyone has seen it already.",
+   "Someone asks {name} for an intimate photo and promises it will disappear after one view.",
+   "A friend says forwarding a private image is harmless because the person sent it to somebody once before."
+  ],
+  rumours:[
+   "After {name} rejects someone, a sexual rumour about her starts moving through the class chat.",
+   "Students edit a photo of {name} into a sexual joke and begin reposting it.",
+   "A rumour about {name}'s dating life reaches people who were not even at the event being discussed.",
+   "Someone posts an anonymous message about {name}, and classmates begin treating it as confirmed."
+  ],
+  "adult-boundary":[
+   "A coach starts messaging {name} late at night and says their chats should stay between them.",
+   "A teacher tells {name} she is 'mature for her age' and invites her to meet alone off school grounds.",
+   "An older youth leader gives {name} special attention, gifts and private rides home, then asks her not to tell family.",
+   "A school adult begins sharing personal sexual jokes with {name} and says other adults would not understand."
+  ],
+  "school-harassment":[
+   "On the walk home, boys keep making sexual comments at {name} after she asks them to stop.",
+   "Students block {name}'s way in a corridor and demand she rate which boy she would date.",
+   "A group repeatedly comments on {name}'s body during lunch while teachers are across the room.",
+   "Someone keeps snapping photos of {name} at school and adding sexual captions."
+  ],
+  friend:[
+   "A close friend tells {name} her boyfriend scares her, then asks her not to turn it into school gossip.",
+   "{name}'s friend says she feels pressured in her relationship but is afraid adults will ban her from dating if she tells them.",
+   "A friend asks {name} for help after receiving threatening messages from someone she is dating.",
+   "Someone {name} trusts says, 'I need help, but please do not confront him yourself.'"
+  ],
+  party:[
+   "At a gathering in {place}, {name} notices a friend keeps trying to stay with the group while someone pressures her to leave.",
+   "A friend looks uncomfortable when an older teen keeps offering her drinks and trying to separate her from everyone else.",
+   "At a school event, {name} sees someone repeatedly ignore a girl's attempts to move away.",
+   "During a party, a friend quietly asks {name} not to leave her alone with someone."
+  ],
+  grooming:[
+   "Someone {name} meets online claims to be a teen, sends game gifts and asks for the name of her school.",
+   "An online contact tells {name} she seems more mature than other girls and asks for a private photo.",
+   "A person in {channel} offers {name} money for a secret video call and says adults do not need to know.",
+   "Someone online slowly moves the conversation from games to personal questions about {name}'s body and home."
+  ],
+  home:[
+   "At home, {name} hears one adult threaten another and wonders if telling someone will break up the family.",
+   "{name} sees an adult shove another during an argument and feels responsible for making everyone calm down.",
+   "A younger sibling asks {name} to make the adults stop shouting tonight.",
+   "After repeated frightening arguments at home, {name} starts avoiding bringing friends over."
+  ],
+  evidence:[
+   "A cropped screenshot accuses a student of sexual assault, but nobody can find the full conversation.",
+   "A short clip from school is posted without the moments before it, and people demand everyone choose a side.",
+   "Two students give different accounts of the same incident in {channel}.",
+   "An anonymous post names a student and adds details that no one can verify."
+  ],
+  isolation:[
+   "Someone {name} is dating says her best friend is a bad influence and demands she stop speaking to her.",
+   "A partner gets angry whenever {name} attends an activity without him.",
+   "{name} notices she has stopped seeing friends because every outing causes an argument with the person she is dating.",
+   "Someone tells {name}, 'If we are serious, you should not need anyone else this much.'"
+  ],
+  "peer-misogyny":[
+   "Boys in {name}'s group start rating girls' bodies and mock anyone who refuses to join.",
+   "A group chat turns a girl's rejection of one boy into insults about all girls.",
+   "Friends pressure {name} to laugh at a sexual joke about a real classmate.",
+   "Someone posts a humiliating photo of a girl, and the boys wait to see whether {name} will share it."
+  ],
+  bystander:[
+   "{name} sees a friend block a girl's path after she says she wants to leave.",
+   "On the way home, {name} notices boys following a girl and making sexual comments.",
+   "At a school event, {name} hears a friend keep pressuring someone for a kiss after she says no.",
+   "A teammate makes a sexual joke directly at a girl who looks uncomfortable and asks him to stop."
+  ],
+  anger:[
+   "During an argument, {name} punches a locker and says nobody should be scared because he did not hit a person.",
+   "{name} stands in a doorway during an argument and refuses to move until the other person answers him.",
+   "After getting angry, {name} throws a phone and later says the other person made him do it.",
+   "{name} notices he has started using threats to stop arguments from ending before he is ready."
+  ],
+  "male-survivor":[
+   "A boy tells {name} an older person pressured him into sexual activity and he is ashamed to tell an adult.",
+   "A male friend says he froze during unwanted touching and worries that people will say boys always want sex.",
+   "Someone {name} knows says an older partner threatens him whenever he tries to leave the relationship.",
+   "A boy tells {name} he is scared of being mocked if he reports sexual harassment."
+  ],
+  "friend-disclosure":[
+   "A girl tells {name} her boyfriend scares her and asks him not to start a fight with the boy.",
+   "A friend says she is receiving threatening messages and asks {name} to sit with her while she tells a trusted adult.",
+   "Someone tells {name} about pressure in a relationship but says she does not want the whole friend group involved.",
+   "A friend shares a frightening experience and {name}'s first instinct is to confront the person immediately."
+  ]
+ },
+ child:{
+  body:[
+   "During play, a friend says 'stop,' but other children tell {name} to keep going because stopping is weak.",
+   "A relative keeps tickling {name} after {name} says it is not fun anymore.",
+   "A game gets too rough and one child says they want to stop, but the others laugh.",
+   "Someone keeps hugging {name} even after {name} moves away and says no."
+  ],
+  secret:[
+   "An older person tells {name}, 'This is our special secret. Do not tell any grown-up.' The secret feels scary.",
+   "Someone gives {name} a gift and says it must stay secret from parents.",
+   "An older child says {name} will get in trouble if a certain conversation is repeated to adults.",
+   "A person asks {name} to hide something that makes {name} feel worried and confused."
+  ],
+  "tell-again":[
+   "{name} tells one adult about feeling unsafe, but the adult is distracted and says it is probably nothing.",
+   "A grown-up laughs when {name} asks for help and says children worry too much.",
+   "{name} tries to explain a problem, but the first adult does not really listen.",
+   "After speaking up once, {name} still feels unsafe because nothing changed."
+  ],
+  online:[
+   "Someone in a game chat asks {name} for the name of the school and where {name} lives.",
+   "An online player asks {name} to move into a private chat and keep the conversation secret.",
+   "A new online friend asks for a home address so they can send a surprise gift.",
+   "Someone in {channel} says they are the same age as {name} but refuses to video-call and keeps asking personal questions."
+  ],
+  photo:[
+   "Someone promises {name} game coins in exchange for a private picture in underwear.",
+   "An online person tells {name} a body photo is needed to prove they are really friends.",
+   "A person offers a gift card if {name} sends a picture that should stay private.",
+   "Someone asks {name} for a private photo and says it will disappear after one view."
+  ],
+  bullying:[
+   "Classmates keep calling a child names every day and then say everyone is only joking.",
+   "A group removes {name} from a game, adds {name} back just to insult them, and repeats it the next day.",
+   "Children keep hiding another child's belongings and laughing when the child gets upset.",
+   "A class chat turns one child's mistake into a joke that gets reposted for days."
+  ],
+  gift:[
+   "An adult gives {name} special gifts and then asks to spend time alone without telling family.",
+   "Someone older keeps buying snacks for {name} and says the friendship should stay secret.",
+   "An adult offers {name} something expensive and then asks for a private favour.",
+   "A person tells {name}, 'After everything I give you, you should do this for me.'"
+  ],
+  "friend-touch":[
+   "A friend tells {name} that an older child touched them in a private area and said not to tell.",
+   "Someone's friend says a person touched them in a way that felt wrong and now they are scared.",
+   "A child tells {name} they were asked to keep unwanted touching secret.",
+   "A friend says, 'Something happened that made me uncomfortable, but I do not know how to tell an adult.'"
+  ],
+  home:[
+   "At home, {name} hears adults screaming and sees one adult hit another.",
+   "A younger child asks {name} to step between adults who are fighting.",
+   "During a frightening argument at home, {name} thinks being brave means making the adults stop.",
+   "{name} hears threats at home and wonders whether asking another adult for help would betray the family."
+  ],
+  relative:[
+   "A relative says {name} is rude for refusing to sit on their lap.",
+   "At a family visit, someone insists {name} must give hugs and kisses because they are family.",
+   "A relative keeps touching {name}'s hair and body after {name} asks them to stop.",
+   "An adult family member says children should never say no to affection from elders."
+  ],
+  "school-adult":[
+   "A school adult asks {name} to stay alone in a locked room after everyone leaves.",
+   "An adult at school starts giving {name} secret gifts and says other teachers do not need to know.",
+   "A school worker asks {name} to keep private meetings secret from caregivers.",
+   "An adult at school sends {name} messages outside school and says the friendship is special."
+  ],
+  "friend-bully":[
+   "{name} sees older pupils corner a smaller child and take the child's bag.",
+   "A friend is being bullied by several children who are bigger than {name}.",
+   "{name} sees children filming another child who is crying after being teased.",
+   "A smaller child asks {name} for help because a group keeps waiting for them after school."
+  ],
+  "own-boundary":[
+   "An older relative tells {name} boys should not complain about touch, even when {name} feels uncomfortable.",
+   "Someone keeps roughhousing with {name} after {name} says stop and calls him weak for objecting.",
+   "A family member says boys should accept hugs and touching without making a fuss.",
+   "{name} feels uncomfortable with someone's touch but worries people will laugh because he is a boy."
+  ],
+  fighting:[
+   "Friends tell {name} that boys should settle a disagreement by fighting after school.",
+   "A classmate dares {name} to hit another boy to prove he is not scared.",
+   "During football practice, teammates say walking away from a fight would make {name} look weak.",
+   "A disagreement in a group chat turns into pressure for {name} to meet someone and fight in person."
+  ],
+  "help-friend":[
+   "{name} sees boys follow a girl and make comments after she asks them to stop.",
+   "A friend looks uncomfortable while another child keeps blocking her way.",
+   "{name} hears classmates teasing a girl about her body and sees that she wants it to stop.",
+   "At school, a girl asks {name} to get a teacher because a group will not leave her alone."
+  ]
+ }
+};
+
+function cueFor(p,t,s,variant){
+ const list=SCENE_CUES[p.level][t.id];
+ const template=list&&list.length?list[variant%list.length]:t.scene;
+ return fill(template,s);
+}
+
 const MOMENTS={
  adult:[
   "A friend nearby says, “Maybe you are reading too much into it.”",
@@ -442,7 +775,7 @@ function sceneFor(p,t,s,stage,variant,key,boss){
   const moment=MOMENTS[p.level][variant%MOMENTS[p.level].length];
   const stemPool=STAGE_STEMS[p.level][stage-1];
   const stem=stemPool[hash(key+"-stem")%stemPool.length];
-  const base=fill(t.scene,s);
+  const base=cueFor(p,t,s,variant);
   const bridge=stage===1?"":stage===2?" A little later, another decision has to be made.":stage===3?" Later, somebody asks for help.":stage===4?" Then new information starts circulating.":" By the end of the week, more people are involved and the consequences are harder to ignore.";
   const bossLine=boss?" FINAL CASE OF THIS STAGE: More than one option may sound reasonable at first.":"";
   return opener+" "+base+" "+moment+bridge+bossLine+" "+stem;
