@@ -27,6 +27,8 @@ function load(){
   }catch(e){return fresh()}
 }
 let state=load();
+if(!state.settings)state.settings={};
+if(!Number.isInteger(state.settings.textScale))state.settings.textScale=0;
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function ps(id=state.selectedPath){if(!id)return null;if(!state.pathStates[id])state.pathStates[id]=freshPath();return state.pathStates[id]}
@@ -59,14 +61,36 @@ function totalProgress(id){
   return Math.round(answered/200*100);
 }
 
+function applyTextScale(){
+  document.documentElement.dataset.textScale=String(state.settings.textScale||0);
+}
+function cycleTextScale(){
+  state.settings.textScale=((state.settings.textScale||0)+1)%3;
+  save();applyTextScale();
+  const b=document.getElementById("textSizeBtn");
+  if(b)b.textContent=state.settings.textScale===0?"A":state.settings.textScale===1?"A+":"A++";
+}
+function speak(text){
+  if(!("speechSynthesis" in window)){alert("Read aloud is not available in this browser.");return}
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.rate=0.95;
+  window.speechSynthesis.speak(utterance);
+}
+function skillBars(skills){
+  if(!skills.length)return "";
+  return `<div class="skill-profile">${skills.map(s=>`<div class="skill-row"><div class="skill-label"><span>${esc(s.name)}</span><b>${s.pct}%</b></div><div class="skill-track"><span style="width:${s.pct}%"></span></div></div>`).join("")}</div>`;
+}
 function topbar(extra=""){
-  return `<header class="topbar"><button class="brand-link" id="brandHome" aria-label="Game home"><span class="brand-mark">T</span><span><b>TUBUO WRITES</b><small>WHAT WOULD YOU DO?</small></span></button><div class="top-actions">${extra}<button class="mini-btn" id="helpBtn">NEED HELP?</button></div></header>`;
+  return `<header class="topbar"><button class="brand-link" id="brandHome" aria-label="Game home"><span class="brand-mark">T</span><span><b>TUBUO WRITES</b><small>WHAT WOULD YOU DO?</small></span></button><div class="top-actions">${extra}<button class="mini-btn" id="glossaryBtn">GLOSSARY</button><button class="mini-btn" id="textSizeBtn" aria-label="Change text size">${state.settings.textScale===0?"A":state.settings.textScale===1?"A+":"A++"}</button><button class="mini-btn" id="helpBtn">NEED HELP?</button></div></header>`;
 }
 function bindTop(){
   const b=document.getElementById("brandHome"); if(b)b.onclick=()=>state.selectedPath?home():welcome();
   const h=document.getElementById("helpBtn"); if(h)h.onclick=help;
+  const g=document.getElementById("glossaryBtn"); if(g)g.onclick=glossary;
+  const t=document.getElementById("textSizeBtn"); if(t)t.onclick=cycleTextScale;
 }
-function shell(html,extra=""){app.innerHTML=topbar(extra)+html;bindTop();window.scrollTo({top:0,behavior:"auto"})}
+function shell(html,extra=""){applyTextScale();app.innerHTML=topbar(extra)+html;bindTop();window.scrollTo({top:0,behavior:"auto"})}
 
 function welcome(){
   shell(`<section class="hero hero-main">
