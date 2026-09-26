@@ -106,7 +106,7 @@ p{line-height:1.58}
 .feedback-grid p{margin:.35rem 0 0;font-size:.92rem}
 .feedback-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
 .result-card{text-align:center;padding:34px}
-.score-ring{width:150px;height:150px;border-radius:50%;margin:18px auto;display:grid;place-items:center;background:radial-gradient(circle at center,#fff 58%,transparent 59%),conic-gradient(var(--blue) 0 70%,#e6edf3 70% 100%)}
+.score-ring{width:150px;height:150px;border-radius:50%;margin:18px auto;display:grid;place-items:center;background:radial-gradient(circle at center,#fff 58%,transparent 59%),conic-gradient(var(--blue) 0 var(--score),#e6edf3 var(--score) 100%)}
 .score-ring b{grid-area:1/1;font-size:2.4rem;color:var(--navy)}
 .score-ring span{grid-area:1/1;margin-top:58px;color:var(--muted);font-size:.85rem}
 .result-title{font-size:clamp(2rem,7vw,3.7rem)}
