@@ -659,7 +659,13 @@ const SCENE_CUES={
 function cueFor(p,t,s,variant){
  const list=SCENE_CUES[p.level][t.id];
  const template=list&&list.length?list[variant%list.length]:t.scene;
- return fill(template,s);
+ const filled=fill(template,s);
+ const mentionsName=template.includes("{name}");
+ const mentionsPlace=template.includes("{place}");
+ if(mentionsName&&mentionsPlace)return filled;
+ if(mentionsName)return filled+" This happens in "+s.place+".";
+ if(mentionsPlace)return s.name+" is the person deciding what to do next. "+filled;
+ return s.name+" is dealing with this in "+s.place+": "+filled;
 }
 
 const MOMENTS={
@@ -788,7 +794,13 @@ function contextualAnswer(text,p,s,stage,variant){
    child:[" Tell a safe adult and do not handle a dangerous situation alone."," A child can keep asking safe adults until someone listens."," Do not share private pictures or messages with other children."," Getting help is stronger than keeping an unsafe secret."," The child does not have to confront a bigger person."," A safe choice should make the child less alone, not more."]
   };
   const tail=tails[p.level][hash(s.name+"-"+stage+"-"+variant+"-"+text)%tails[p.level].length];
-  return text+tail;
+  const anchors={
+   adult:[" That keeps the response connected to what "+s.name+" is actually facing."," It also avoids turning "+s.name+"'s situation into a performance for other people."," For "+s.name+", the point is to increase safe options rather than narrow them."," In "+s.place+", the response still has to fit the facts and immediate risk."],
+   teen:[" That keeps "+s.name+"'s situation from becoming more pressure or gossip."," It gives "+s.name+" more support without taking over."," For "+s.name+", the safest response should still respect privacy and choice."," In "+s.place+", friends can help without becoming investigators."],
+   child:[" That gets "+s.name+" closer to safe adult help."," It means "+s.name+" does not have to solve the problem alone."," For "+s.name+", the safe choice is the one that brings in a trusted adult."," In "+s.place+", the child still has the right to ask another safe adult for help."]
+  };
+  const anchor=anchors[p.level][hash(s.name+"-"+s.place+"-"+stage+"-"+variant+"-"+text)%anchors[p.level].length];
+  return text+tail+anchor;
 }
 
 function uniqueTakeaway(t,p,s,stage,variant){
